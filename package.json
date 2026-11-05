@@ -6,18 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "scrape": "node --env-file=.env.local scraper.js",
+    "import:episodes": "node --env-file=.env.local import-episodes.js",
+    "newscraper": "node --env-file=.env.local newscraper.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "hls.js": "^1.7.4",
+    "lucide-react": "^1.64.0",
     "next": "16.4.3",
+    "puppeteer": "^25.16.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "video.js": "^10.2.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/video.js": "^7.3.58",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",

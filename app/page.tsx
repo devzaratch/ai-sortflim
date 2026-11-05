@@ -1,69 +1,852 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useState } from 'react'
+import type { User } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
+import Link from 'next/link'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
+import { fetchAllMovies, fetchEpisodeCounts, fetchRecommendations } from '@/lib/data'
+import { clearWatchHistory, fetchServerHistory, readLocalHistory } from '@/lib/history'
+import type { ContinueWatchingItem, Movie } from '@/lib/types'
+
+// รายชื่อหมวดหมู่ทั้งหมดสำหรับสร้าง Genre Cards
+const ALL_GENRES = [
+  'รักวัยเรียน', 'โรแมนติก', 'ครอบครัว', 'แก้แค้น', 'ดราม่า', 'ย้อนยุค',
+  'คุณธรรม', 'คอมเมดี้', 'แอ็คชั่น', 'วาย', 'ท่านประธาน', 'ผี',
+  'พลิกชีวิต', 'แฟนตาซี'
+]
 
 export default function Home() {
+  const [user, setUser] = useState<User | null>(null)
+  const [movies, setMovies] = useState<Movie[]>([])
+  const [epCounts, setEpCounts] = useState<{ [key: string]: number }>({})
+  const [loading, setLoading] = useState<boolean>(true)
+  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const [continueList, setContinueList] = useState<ContinueWatchingItem[]>([])
+  const [totalEpisodesCount, setTotalEpisodesCount] = useState<number>(0)
+  const [formattedDate, setFormattedDate] = useState<string>('')
+  const [recommendations, setRecommendations] = useState<Movie[]>([])
+
+  // แนะนำเรื่องที่คล้ายกับเรื่องล่าสุดที่ผู้ใช้ดู (อิงจาก genre)
+  useEffect(() => {
+    const history = readLocalHistory()
+    if (!user || history.length === 0) {
+      setRecommendations([])
+      return
+    }
+    let cancelled = false
+    fetchRecommendations(history[0].movieId).then((recs) => {
+      if (!cancelled) setRecommendations(recs)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  useEffect(() => {
+    checkUserAndHistory()
+    fetchMoviesAndStats()
+
+    setFormattedDate(
+      new Date().toLocaleDateString('th-TH', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
+    )
+  }, [])
+
+  // ล็อคให้สไลด์ Hero แสดงเฉพาะ 5 เรื่องล่าสุด
+  const heroMovies = movies.slice(0, 5)
+
+  useEffect(() => {
+    if (heroMovies.length <= 1) return
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % heroMovies.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [heroMovies.length])
+
+  const checkUserAndHistory = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+
+    if (user) {
+      // ดึงประวัติ "ดูต่อ" จากตาราง watch_history ของผู้ใช้คนนี้
+      setContinueList(await fetchServerHistory(user.id))
+    } else {
+      // ถ้ายังไม่ล็อกอิน ให้ดึงจาก localStorage
+      setContinueList(readLocalHistory())
+    }
+  }
+
+  const fetchMoviesAndStats = async () => {
+    setLoading(true)
+    try {
+      const moviesData = await fetchAllMovies()
+      setMovies(moviesData)
+
+      // นับจำนวนตอนทั้งหมด + จำนวนตอนต่อเรื่อง (แบ่งหน้าจนครบ)
+      const counts = await fetchEpisodeCounts()
+      setEpCounts(counts)
+      setTotalEpisodesCount(Object.values(counts).reduce((sum, n) => sum + n, 0))
+    } catch (err) {
+      console.error('Error fetching data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleClearHistory = async () => {
+    await clearWatchHistory(user)
+    setContinueList([])
+  }
+
+  const activeMovie = heroMovies.length > 0 ? heroMovies[activeIndex] : null
+  const prevIndex = heroMovies.length > 0 ? (activeIndex - 1 + heroMovies.length) % heroMovies.length : 0
+  const nextIndex = heroMovies.length > 0 ? (activeIndex + 1) % heroMovies.length : 0
+
+  const top10Movies = movies.slice(0, 10)
+
+  // กรองซีรีส์ตามหมวดหมู่จากข้อมูลจริงใน Supabase
+  const dramaMovies = movies.filter(m => m.genre?.includes('ดราม่า'))
+  const romanceMovies = movies.filter(m => m.genre?.includes('โรแมนติก'))
+  const familyMovies = movies.filter(m => m.genre?.includes('ครอบครัว'))
+  const periodMovies = movies.filter(m => m.genre?.includes('ย้อนยุค'))
+  const revengeMovies = movies.filter(m => m.genre?.includes('แก้แค้น'))
+  const completedMovies = movies.filter(m => m.is_completed === true)
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-orange-500 selection:text-black">
+
+      <Header isHome />
+
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-10">
+
+        {/* Featured Hero Carousel */}
+        {activeMovie && (
+          <section className="relative w-full rounded-3xl bg-gradient-to-r from-[#16161a] via-[#121215] to-[#0a0a0c] p-6 sm:p-10 md:p-12 overflow-hidden border border-zinc-800/60 shadow-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[360px]">
+
+              <div className="lg:col-span-7 space-y-4 z-10 flex flex-col justify-center">
+                <div className="flex items-center gap-2 text-xs font-semibold">
+                  <span className="text-orange-500 flex items-center gap-1 font-bold">
+                    🔥 ดูยอดฮิตครบจบ • เรื่องเด่นแนะนำ
+                  </span>
+                </div>
+
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                  {activeMovie.title}
+                </h1>
+
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
+                  {activeMovie.is_completed && (
+                    <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
+                      จบแล้ว
+                    </span>
+                  )}
+                  <span className="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">
+                    {epCounts[activeMovie.id] || 0} ตอน
+                  </span>
+                  <span className="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">
+                    {activeMovie.genre || 'ซีรีส์สั้น AI'}
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-zinc-400 line-clamp-3 leading-relaxed max-w-xl">
+                  {activeMovie.description || 'เตรียมพบกับเรื่องราวสุดเข้มข้น ลุ้นระทึกทุกตอน ดูฟรี EP.1 คมชัดระดับ HD บนระบบสตรีมมิ่ง AI แนวตั้งได้แล้ววันนี้!'}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <Link
+                    href={`/movie-detail?movieId=${activeMovie.id}`}
+                    className="bg-orange-500 hover:bg-orange-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xl shadow-orange-500/30 text-xs sm:text-sm transform active:scale-95"
+                  >
+                    <span>▶</span> ดูเรื่องนี้
+                  </Link>
+
+                  <Link
+                    href={`/movie-detail?movieId=${activeMovie.id}`}
+                    className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 font-bold px-5 py-2.5 rounded-xl transition text-xs sm:text-sm border border-zinc-700/60"
+                  >
+                    รายชื่อตอน
+                  </Link>
+                </div>
+
+                <div className="flex items-center gap-2 pt-4">
+                  {heroMovies.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveIndex(idx)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === idx ? 'w-8 bg-orange-500' : 'w-2 bg-zinc-700 hover:bg-zinc-500'
+                        }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 flex items-center justify-center lg:justify-end relative min-h-[300px]">
+                <div className="relative flex items-center justify-center w-full max-w-[400px]">
+
+                  {heroMovies.length > 2 && (
+                    <div
+                      onClick={() => setActiveIndex(prevIndex)}
+                      className="absolute -left-2 sm:left-0 z-0 w-28 sm:w-36 aspect-[3/4] rounded-xl overflow-hidden shadow-xl opacity-40 scale-90 border border-zinc-700 cursor-pointer hover:opacity-70 transition duration-300"
+                    >
+                      <img
+                        src={heroMovies[prevIndex]?.poster_url || '/placeholder.jpg'}
+                        alt="prev"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+
+                  <div className="z-20 w-44 sm:w-52 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-orange-500/80 relative transform scale-105 transition-all duration-500">
+                    {activeMovie.poster_url ? (
+                      <img
+                        src={activeMovie.poster_url}
+                        alt={activeMovie.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-zinc-600 text-xs">ไม่มีรูปโปสเตอร์</div>
+                    )}
+                  </div>
+
+                  {heroMovies.length > 1 && (
+                    <div
+                      onClick={() => setActiveIndex(nextIndex)}
+                      className="absolute -right-2 sm:right-0 z-0 w-28 sm:w-36 aspect-[3/4] rounded-xl overflow-hidden shadow-xl opacity-40 scale-90 border border-zinc-700 cursor-pointer hover:opacity-70 transition duration-300"
+                    >
+                      <img
+                        src={heroMovies[nextIndex]?.poster_url || '/placeholder.jpg'}
+                        alt="next"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* SEO Info Headline */}
+        <div className="space-y-1">
+          <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
+            ดูละคร AI ละครสั้น AI ซีรีส์ AI แนวตั้ง ครบทุกตอน
+          </h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            รวมละคร AI พากย์ไทย ทั้งหมด {movies.length} เรื่อง {totalEpisodesCount} ตอน ทั้งวาย ย้อนยุค โรแมนติก แฟนตาซี จัดเรียงตอนตั้งแต่ EP.1 ดูฟรี ไม่ต้องสมัครสมาชิก {formattedDate ? `• อัปเดตล่าสุด ${formattedDate}` : ''}
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* SECTION: ดูต่อจากที่ค้างไว้ */}
+        {continueList.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span className="text-orange-500">▶</span> ดูต่อจากที่ค้างไว้
+              </h3>
+              <button
+                onClick={handleClearHistory}
+                className="text-xs text-zinc-500 hover:text-zinc-300 transition"
+              >
+                ล้างประวัติการดู
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {continueList.slice(0, 6).map((item) => (
+                <Link key={item.movieId} href={`/movie-detail?movieId=${item.movieId}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-lg">
+                    {item.posterUrl ? (
+                      <img src={item.posterUrl} alt={item.movieTitle} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-orange-500/90 text-white flex items-center justify-center pl-0.5 shadow-lg group-hover:scale-110 transition">
+                        ▶
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {item.movieTitle}
+                    </h4>
+                    <p className="text-[11px] font-semibold text-zinc-400">
+                      ต่อ EP.{item.lastEp} / {item.totalEp || '??'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION: แนะนำสำหรับคุณ (จากประวัติการดู) */}
+        {recommendations.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span className="text-orange-500">🎯</span> แนะนำสำหรับคุณ
+              </h3>
+              <Link href="/movies" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {recommendations.map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-lg">
+                    {movie.poster_url ? (
+                      <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+                    <span className="absolute top-2 right-2 bg-black/70 text-orange-400 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                      {epCounts[movie.id] || 0} ตอน
+                    </span>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[11px] font-semibold text-zinc-400 truncate">
+                      {movie.genre || 'ซีรีส์สั้น AI'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION: อัปเดตล่าสุด */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+            <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+              <span className="text-orange-500">✨</span> อัปเดตล่าสุด
+            </h3>
+            <Link href="/movies" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+              ดูทั้งหมด {movies.length} เรื่อง &gt;
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-20 text-zinc-500 text-xs animate-pulse">กำลังโหลดข้อมูล...</div>
+          ) : movies.length === 0 ? (
+            <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-500 text-xs">
+              ยังไม่มีข้อมูลซีรีส์ในระบบ Supabase
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
+              {movies.slice(0, 6).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูปโปสเตอร์</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* SECTION: Top 10 ละคร AI ประจำสัปดาห์ */}
+        {top10Movies.length > 0 && (
+          <section className="space-y-4 pt-4">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span className="text-amber-400">🏆</span> Top 10 ละคร AI ประจำสัปดาห์
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5">
+              {top10Movies.map((movie, index) => {
+                const rank = index + 1
+                return (
+                  <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col relative">
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                      {movie.is_completed && (
+                        <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                          จบแล้ว
+                        </div>
+                      )}
+
+                      {movie.poster_url ? (
+                        <img
+                          src={movie.poster_url}
+                          alt={movie.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                      )}
+
+                      <div className="absolute -bottom-3 -left-2 z-20 pointer-events-none select-none">
+                        <span className="text-6xl md:text-7xl font-black italic text-zinc-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] stroke-black">
+                          {rank}
+                        </span>
+                      </div>
+
+                      <div className="absolute bottom-2 right-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                        {epCounts[movie.id] || 0} ตอน
+                      </div>
+                    </div>
+
+                    <div className="mt-4 px-0.5 space-y-0.5">
+                      <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                        {movie.title}
+                      </h4>
+                      <p className="text-[10px] text-zinc-500 truncate">
+                        {movie.genre || 'ซีรีส์สั้น AI'}
+                      </p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 1: ละคร AI แนวดราม่า */}
+        {dramaMovies.length > 0 && (
+          <section className="space-y-4 pt-4 border-t border-zinc-800/60">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span>🎭</span> ละคร AI แนวดราม่า
+              </h3>
+              <Link href="/movies?genre=ดราม่า" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด {dramaMovies.length} เรื่อง &gt;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {dramaMovies.slice(0, 7).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'ดราม่า'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 2: ละคร AI โรแมนติก */}
+        {romanceMovies.length > 0 && (
+          <section className="space-y-4 pt-4 border-t border-zinc-800/60">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span>💘</span> ละคร AI โรแมนติก
+              </h3>
+              <Link href="/movies?genre=โรแมนติก" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด {romanceMovies.length} เรื่อง &gt;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {romanceMovies.slice(0, 7).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'โรแมนติก'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 3: ละคร AI แนวครอบครัว */}
+        {familyMovies.length > 0 && (
+          <section className="space-y-4 pt-4 border-t border-zinc-800/60">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span>👨‍👩‍👧</span> ละคร AI แนวครอบครัว
+              </h3>
+              <Link href="/movies?genre=ครอบครัว" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด {familyMovies.length} เรื่อง &gt;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {familyMovies.slice(0, 7).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'ครอบครัว'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 4: ละคร AI ย้อนยุค */}
+        {periodMovies.length > 0 && (
+          <section className="space-y-4 pt-4 border-t border-zinc-800/60">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span>👘</span> ละคร AI ย้อนยุค
+              </h3>
+              <Link href="/movies?genre=ย้อนยุค" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด {periodMovies.length} เรื่อง &gt;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {periodMovies.slice(0, 7).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'ย้อนยุค'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 5: ละคร AI แนวแก้แค้น */}
+        {revengeMovies.length > 0 && (
+          <section className="space-y-4 pt-4 border-t border-zinc-800/60">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span>🔥</span> ละคร AI แนวแก้แค้น
+              </h3>
+              <Link href="/movies?genre=แก้แค้น" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด {revengeMovies.length} เรื่อง &gt;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {revengeMovies.slice(0, 7).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'แก้แค้น'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 6: จบแล้ว ดูรวดเดียว */}
+        {completedMovies.length > 0 && (
+          <section className="space-y-4 pt-4 border-t border-zinc-800/60">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                <span>✅</span> จบแล้ว ดูรวดเดียว
+              </h3>
+              <Link href="/movies?status=completed" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+                ดูทั้งหมด {completedMovies.length} เรื่อง &gt;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {completedMovies.slice(0, 7).map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                      จบแล้ว
+                    </div>
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'จบแล้ว'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 7: เลือกตามแนว (Genre Card Grid) */}
+        <section className="space-y-4 pt-6 border-t border-zinc-800/60">
+          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+            <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+              <span>🏷️</span> เลือกตามแนว
+            </h3>
+            <Link href="/movies" className="text-xs text-zinc-400 hover:text-orange-400 transition">
+              ทั้งหมด &gt;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {ALL_GENRES.map((genre) => {
+              const genreMovieCount = movies.filter(m => m.genre?.includes(genre)).length
+              return (
+                <Link
+                  key={genre}
+                  href={`/movies?genre=${encodeURIComponent(genre)}`}
+                  className="bg-zinc-900/80 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-orange-500/50 rounded-2xl p-4 transition duration-200 flex flex-col justify-between group shadow-lg"
+                >
+                  <span className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition">
+                    {genre}
+                  </span>
+                  <span className="text-[11px] font-semibold text-zinc-500 mt-2">
+                    {genreMovieCount} เรื่อง
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* SECTION 8: ละครทั้งหมด (All Movies Grid) */}
+        <section className="space-y-4 pt-6 border-t border-zinc-800/60">
+          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+            <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+              <span>🎬</span> ละครทั้งหมด {movies.length} เรื่อง
+            </h3>
+            <span className="text-xs text-zinc-500 font-medium">
+              เลือกตามแนว / เรียงลำดับ &gt;
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-20 text-zinc-500 text-xs animate-pulse">กำลังโหลดข้อมูล...</div>
+          ) : movies.length === 0 ? (
+            <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-500 text-xs">
+              ยังไม่มีข้อมูลซีรีส์ในระบบ Supabase
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {movies.map((movie) => (
+                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+
+                    {movie.is_completed && (
+                      <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        จบแล้ว
+                      </div>
+                    )}
+
+                    {movie.poster_url ? (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
+                    )}
+
+                    <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm text-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded border border-zinc-700/50">
+                      {epCounts[movie.id] || 0} ตอน
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 px-0.5 space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                      {movie.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {movie.genre || 'ซีรีส์สั้น AI'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
       </main>
+
+      {/* Footer Component */}
+      <Footer />
     </div>
-  );
+  )
 }
