@@ -1,17 +1,9 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { connection } from 'next/server'
-import WatchContent from './WatchContent'
+import WatchRoute from './WatchRoute'
 import { getSupabaseServerClient } from '@/lib/supabase-server'
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
-
-/** บอก Next.js ว่า route นี้ตั้งใจ render ตอน request (metadata ใช้ searchParams + DB) */
-async function DynamicMarker() {
-    await connection()
-    return null
-}
-
 
 function firstParam(value: string | string[] | undefined) {
     return Array.isArray(value) ? value[0] : value
@@ -54,35 +46,16 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     }
 }
 
-async function WatchRoute({ searchParams }: { searchParams: SearchParams }) {
-    const params = await searchParams
-    const movieId = firstParam(params.movieId) ?? null
-    const epParam = firstParam(params.ep)
-    const parsedEp = epParam ? Number.parseInt(epParam, 10) : NaN
-
+export default function WatchPage() {
     return (
-        <WatchContent
-            movieId={movieId}
-            initialEp={Number.isFinite(parsedEp) && parsedEp > 0 ? parsedEp : null}
-        />
-    )
-}
-
-export default function WatchPage({ searchParams }: { searchParams: SearchParams }) {
-    return (
-        <>
-            <Suspense
-                fallback={
-                    <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
-                        กำลังโหลดหน้าวิดีโอ...
-                    </div>
-                }
-            >
-                <WatchRoute searchParams={searchParams} />
-            </Suspense>
-            <Suspense>
-                <DynamicMarker />
-            </Suspense>
-        </>
+        <Suspense
+            fallback={
+                <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
+                    กำลังโหลดหน้าวิดีโอ...
+                </div>
+            }
+        >
+            <WatchRoute />
+        </Suspense>
     )
 }

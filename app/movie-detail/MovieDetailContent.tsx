@@ -192,15 +192,22 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                         </span>
                                     )}
                                 </div>
-                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
-                                    {movie.title}
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-snug">
+                                    {movie.title}{' '}
+                                    <span className="text-lg sm:text-xl md:text-2xl text-zinc-300 font-bold">
+                                        (ดูครบทุกตอน EP.1-{episodes.length}{movie.is_completed ? ' (จบ)' : ''})
+                                    </span>
                                 </h1>
 
                                 <div className="flex flex-wrap items-center gap-2 mt-2.5">
                                     {genreTags.map((tag: string, idx: number) => (
-                                        <span key={idx} className="bg-zinc-800/90 text-zinc-300 text-[11px] font-bold px-3 py-1 rounded-lg border border-zinc-700/60 backdrop-blur-sm">
+                                        <Link
+                                            key={idx}
+                                            href={`/movies?genre=${encodeURIComponent(tag)}`}
+                                            className="bg-zinc-800/90 text-zinc-300 text-[11px] font-bold px-3 py-1 rounded-lg border border-zinc-700/60 backdrop-blur-sm hover:text-white hover:border-orange-500/60 hover:bg-zinc-700/90 transition"
+                                        >
                                             {tag}
-                                        </span>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
@@ -368,6 +375,52 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                             )}
                         </div>
                     </div>
+
+                    {/* FAQ — คำถามที่พบบ่อย (SEO) */}
+                    <section className="space-y-3">
+                        <h2 className="text-lg font-black text-white border-b border-zinc-800 pb-3">
+                            คำถามที่พบบ่อยเกี่ยวกับ {movie.title}
+                        </h2>
+                        <div className="space-y-2.5 max-w-3xl">
+                            {[
+                                {
+                                    q: `${movie.title} ทั้งหมดกี่ตอน เรื่องนี้จบหรือยัง?`,
+                                    a: movie.is_completed
+                                        ? `${movie.title} มีทั้งหมด ${episodes.length} ตอน และเรื่องนี้จบครบทุกตอนแล้ว เริ่มดูจาก EP.1 ได้ทันที`
+                                        : `${movie.title} มีทั้งหมด ${episodes.length} ตอนตอนนี้ ยังมีอัปเดตตอนใหม่เรื่อย ๆ ติดตามได้ที่หน้านี้`,
+                                },
+                                {
+                                    q: `เริ่มดู ${movie.title} ฟรีได้เลยไหม?`,
+                                    a: 'ได้เลย กดปุ่ม ▶ ดูต่อ EP ด้านบนในหน้านี้ เริ่มรับชมจาก EP.1 ได้ทันที พร้อมพากย์ไทยคุณภาพคมชัด',
+                                },
+                                {
+                                    q: 'ดูค้างไว้แล้วจะกลับมาดูต่อจากตอนที่ค้างยังไง?',
+                                    a: `ระบบจำตอนล่าสุดที่คุณดูไว้ให้อัตโนมัติ กดปุ่ม ▶ ดูต่อ EP.${lastWatchedEp} ด้านบน มันจะเปิดตรงตอนที่คุณดูค้างไว้ทันที`,
+                                },
+                                {
+                                    q: `ดู ${movie.title} บนมือถือได้ไหม?`,
+                                    a: 'ดูได้ทุกอุปกรณ์ ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์ แนวตั้งเต็มจอ เหมือนดูวิดีโอสั้นในโซเชียล เปิดผ่านเบราว์เซอร์โดยไม่ต้องติดตั้งแอป',
+                                },
+                                {
+                                    q: 'อยากดูเรื่องอื่นแนวเดียวกัน ต้องค้นยังไง?',
+                                    a: 'กดที่แท็กแนวเรื่องด้านบนได้เลย ระบบจะพาไปหน้ารวมเรื่องแนวนั้น หรือเลื่อนไปดูต่อเรื่องคล้ายกัน ด้านขวาของหน้านี้',
+                                },
+                            ].map((item, i) => (
+                                <details
+                                    key={i}
+                                    className="group bg-zinc-900/50 border border-zinc-800/80 rounded-xl overflow-hidden"
+                                >
+                                    <summary className="flex items-center justify-between gap-3 text-sm font-bold text-zinc-200 px-4 py-3 cursor-pointer list-none hover:text-white transition">
+                                        <span>{item.q}</span>
+                                        <span className="text-orange-400 text-base leading-none shrink-0 transition-transform group-open:rotate-45">
+                                            ＋
+                                        </span>
+                                    </summary>
+                                    <p className="text-xs text-zinc-400 leading-relaxed px-4 pb-3.5 pt-1">{item.a}</p>
+                                </details>
+                            ))}
+                        </div>
+                    </section>
                 </main>
             </div>
 

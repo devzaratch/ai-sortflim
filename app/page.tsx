@@ -161,14 +161,14 @@ export default function Home() {
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Link
                     href={`/movie-detail?movieId=${activeMovie.id}`}
-                    className="bg-orange-500 hover:bg-orange-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xl shadow-orange-500/30 text-xs sm:text-sm transform active:scale-95"
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-extrabold px-7 py-3 rounded-full transition flex items-center gap-2 shadow-xl shadow-orange-500/30 text-xs sm:text-sm transform active:scale-95"
                   >
-                    <span>▶</span> ดูเรื่องนี้
+                    <span>▶</span> ดู EP.1 ฟรี
                   </Link>
 
                   <Link
                     href={`/movie-detail?movieId=${activeMovie.id}`}
-                    className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 font-bold px-5 py-2.5 rounded-xl transition text-xs sm:text-sm border border-zinc-700/60"
+                    className="bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 font-bold px-6 py-3 rounded-full transition text-xs sm:text-sm border border-zinc-700/60"
                   >
                     รายชื่อตอน
                   </Link>
@@ -246,7 +246,7 @@ export default function Home() {
 
         {/* SECTION: ดูต่อจากที่ค้างไว้ */}
         {continueList.length > 0 && (
-          <section className="space-y-4">
+          <section id="continue" className="space-y-4 scroll-mt-24">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
                 <span className="text-orange-500">▶</span> ดูต่อจากที่ค้างไว้

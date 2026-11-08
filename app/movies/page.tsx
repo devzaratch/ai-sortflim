@@ -22,11 +22,15 @@ function MoviesContent() {
     const router = useRouter()
     const urlGenre = searchParams.get('genre')
     const urlStatus = searchParams.get('status')
+    const urlSearch = (searchParams.get('search') || '').trim()
+    const savedOnly = searchParams.get('saved') === '1'
 
     const [movies, setMovies] = useState<Movie[]>([])
     const [epCounts, setEpCounts] = useState<{ [key: string]: number }>({})
     const [genreCounts, setGenreCounts] = useState<{ [key: string]: number }>({})
     const [loading, setLoading] = useState<boolean>(true)
+    /** รายชื่อเรื่องที่ผู้ใช้เก็บไว้ (เก็บใน localStorage) — ใช้เมื่อเปิด ?saved=1 */
+    const [savedMovieIds, setSavedMovieIds] = useState<string[]>([])
 
     // States สำหรับระบบ Filter
     const [selectedGenre, setSelectedGenre] = useState<string>('ทุกแนว')
@@ -47,6 +51,17 @@ function MoviesContent() {
             setCompletedOnly(false)
         }
     }, [urlGenre, urlStatus])
+
+    useEffect(() => {
+        // อ่านรายชื่อเรื่องที่ผู้ใช้เก็บไว้จาก localStorage (ฝั่ง client เท่านั้น)
+        try {
+            const raw = localStorage.getItem('bookmarked_movies')
+            const parsed: unknown = raw ? JSON.parse(raw) : []
+            setSavedMovieIds(Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [])
+        } catch {
+            setSavedMovieIds([])
+        }
+    }, [savedOnly])
 
     useEffect(() => {
         fetchMoviesAndEpisodes()
@@ -87,13 +102,21 @@ function MoviesContent() {
         }
     }
 
-    // กรองตามหมวดหมู่/สถานะ แล้วเรียงตามตัวเลือกจริง (ไม่ใช่แค่ UI)
+    // กรองตามหมวดหมู่/สถานะ/คำค้นหา/เรื่องที่เก็บไว้ แล้วเรียงตามตัวเลือกจริง (ไม่ใช่แค่ UI)
     const filteredMovies = useMemo(() => {
+        const searchTerm = urlSearch.toLowerCase()
+        const savedSet = new Set(savedMovieIds)
+
         const result = movies.filter((movie) => {
             const movieGenres = movie.genre ? movie.genre.split(',').map((t) => t.trim()) : []
-            const matchGenre = selectedGenre === 'ทุกแนว' || movieGenres.includes(selectedGenre)
-            const matchCompleted = completedOnly ? movie.is_completed === true : true
-            return matchGenre && matchCompleted
+            const matchGenre = savedOnly || selectedGenre === 'ทุกแนว' || movieGenres.includes(selectedGenre)
+            const matchCompleted = savedOnly || completedOnly ? movie.is_completed === true : true
+            const matchSearch =
+                !searchTerm ||
+                (movie.title || '').toLowerCase().includes(searchTerm) ||
+                (movie.genre || '').toLowerCase().includes(searchTerm)
+            const matchSaved = !savedOnly || savedSet.has(movie.id)
+            return matchGenre && matchCompleted && matchSearch && matchSaved
         })
 
         return [...result].sort((a, b) => {
@@ -103,7 +126,7 @@ function MoviesContent() {
             }
             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         })
-    }, [movies, selectedGenre, completedOnly, sortBy, epCounts])
+    }, [movies, selectedGenre, completedOnly, sortBy, epCounts, urlSearch, savedOnly, savedMovieIds])
 
     // คำนวณหายอดรวมตอนเฉพาะเรื่องที่แสดงอยู่
     const displayedTotalEps = filteredMovies.reduce((acc, m) => acc + (epCounts[m.id] || 0), 0)
@@ -119,10 +142,33 @@ function MoviesContent() {
 
                 <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
 
+                    {/* แถบแจ้งโหมดค้นหา / เรื่องที่เก็บไว้ */}
+                    {(urlSearch || savedOnly) && (
+                        <div className="flex flex-wrap items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-300 px-4 py-2.5 rounded-xl text-xs font-bold">
+                            {savedOnly ? (
+                                <span>❤️ แสดงเฉพาะเรื่องที่คุณเก็บไว้</span>
+                            ) : (
+                                <span>🔍 ผลการค้นหา &ldquo;{urlSearch}&rdquo;</span>
+                            )}
+                            <button
+                                onClick={() => router.push('/movies')}
+                                className="ml-auto text-zinc-400 hover:text-white transition font-bold"
+                            >
+                                ✕ ล้างตัวกรอง
+                            </button>
+                        </div>
+                    )}
+
                     {/* Title & Info Banner */}
                     <div className="space-y-1">
                         <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-                            {selectedGenre === 'ทุกแนว' ? 'ละคร AI ทั้งหมด' : `ละคร AI แนว${selectedGenre}`}
+                            {savedOnly
+                                ? 'เรื่องที่เก็บไว้'
+                                : urlSearch
+                                    ? `ผลการค้นหา: ${urlSearch}`
+                                    : selectedGenre === 'ทุกแนว'
+                                        ? 'ละคร AI ทั้งหมด'
+                                        : `ละคร AI แนว${selectedGenre}`}
                         </h1>
                         <p className="text-xs text-zinc-400">
                             {filteredMovies.length} เรื่อง • {displayedTotalEps} ตอน • คัดสรรความสนุก พากย์ไทย จัดเรียงตอนตั้งแต่ EP.1

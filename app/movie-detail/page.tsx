@@ -1,20 +1,9 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { connection } from 'next/server'
-import MovieDetailContent from './MovieDetailContent'
+import MovieDetailRoute from './MovieDetailRoute'
 import { getSupabaseServerClient } from '@/lib/supabase-server'
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
-
-/**
- * ตัวบอก Next.js ว่า route นี้ตั้งใจ render ตอน request (metadata ต้องใช้ searchParams + DB)
- * ต้องอยู่ใน <Suspense> เพื่อให้ static shell ยัง prerender ได้
- */
-async function DynamicMarker() {
-    await connection()
-    return null
-}
-
 
 function firstParam(value: string | string[] | undefined) {
     return Array.isArray(value) ? value[0] : value
@@ -70,26 +59,16 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     }
 }
 
-async function MovieDetailRoute({ searchParams }: { searchParams: SearchParams }) {
-    const params = await searchParams
-    return <MovieDetailContent movieId={firstParam(params.movieId) ?? null} />
-}
-
-export default function MovieDetailPage({ searchParams }: { searchParams: SearchParams }) {
+export default function MovieDetailPage() {
     return (
-        <>
-            <Suspense
-                fallback={
-                    <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
-                        กำลังโหลดหน้า...
-                    </div>
-                }
-            >
-                <MovieDetailRoute searchParams={searchParams} />
-            </Suspense>
-            <Suspense>
-                <DynamicMarker />
-            </Suspense>
-        </>
+        <Suspense
+            fallback={
+                <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
+                    กำลังโหลดหน้า...
+                </div>
+            }
+        >
+            <MovieDetailRoute />
+        </Suspense>
     )
 }

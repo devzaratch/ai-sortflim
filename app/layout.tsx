@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
 
 const notoSansThai = Noto_Sans_Thai({
   variable: "--font-noto-sans-thai",
@@ -53,8 +54,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-full flex flex-col bg-zinc-950 text-white font-sans">
+      <body className="min-h-full flex flex-col bg-zinc-950 text-white font-sans pb-[60px] md:pb-0">
         {children}
+        <BottomNav />
       </body>
     </html>
   );
