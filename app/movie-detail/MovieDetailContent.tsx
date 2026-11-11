@@ -135,7 +135,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
         return (
             <div className="min-h-screen bg-[#0b0b0d] text-white flex flex-col items-center justify-center space-y-4">
                 <p className="text-zinc-400 text-sm">ไม่พบข้อมูลละครเรื่องนี้</p>
-                <Link href="/" className="bg-orange-500 text-black font-bold px-4 py-2 rounded-xl text-xs">
+                <Link href="/" className="bg-amber-500 text-black font-bold px-4 py-2 rounded-xl text-xs">
                     กลับสู่หน้าแรก
                 </Link>
             </div>
@@ -146,7 +146,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
     const genreTags = movie.genre ? movie.genre.split(',').map((t: string) => t.trim()) : []
 
     return (
-        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-orange-500 selection:text-black flex flex-col justify-between">
+        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-amber-500 selection:text-black flex flex-col justify-between">
 
             <div>
                 <Header activeGenre={genreTags[0] ?? null} />
@@ -175,7 +175,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                             </div>
                         )}
 
-                        <div className="w-44 sm:w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-orange-500/60 flex-shrink-0 relative z-10 group">
+                        <div className="w-44 sm:w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-500/60 flex-shrink-0 relative z-10 group">
                             {movie.poster_url ? (
                                 <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover" />
                             ) : (
@@ -204,7 +204,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                         <Link
                                             key={idx}
                                             href={`/movies?genre=${encodeURIComponent(tag)}`}
-                                            className="bg-zinc-800/90 text-zinc-300 text-[11px] font-bold px-3 py-1 rounded-lg border border-zinc-700/60 backdrop-blur-sm hover:text-white hover:border-orange-500/60 hover:bg-zinc-700/90 transition"
+                                            className="bg-zinc-800/90 text-zinc-300 text-[11px] font-bold px-3 py-1 rounded-lg border border-zinc-700/60 backdrop-blur-sm hover:text-white hover:border-amber-500/60 hover:bg-zinc-700/90 transition"
                                         >
                                             {tag}
                                         </Link>
@@ -222,7 +222,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                     <p className="text-[11px] text-zinc-400">ความยาว</p>
                                 </div>
                                 <div className="border-l border-zinc-700 pl-6">
-                                    <p className="text-lg font-black text-orange-400">{lastWatchedEp}/{episodes.length}</p>
+                                    <p className="text-lg font-black text-amber-400">{lastWatchedEp}/{episodes.length}</p>
                                     <p className="text-[11px] text-zinc-400">ดูแล้ว</p>
                                 </div>
                             </div>
@@ -230,7 +230,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                             <div className="flex flex-wrap items-center gap-3 pt-1">
                                 <Link
                                     href={`/watch?movieId=${movie.id}&ep=${lastWatchedEp}`}
-                                    className="bg-orange-500 hover:bg-orange-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-orange-500/30 text-xs sm:text-sm transform active:scale-95"
+                                    className="bg-amber-500 hover:bg-amber-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-500/30 text-xs sm:text-sm transform active:scale-95"
                                 >
                                     <span>▶</span> ดูต่อ EP.{lastWatchedEp}
                                 </Link>
@@ -289,7 +289,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                         href={`/watch?movieId=${movie.id}&ep=${ep.episode_number}`}
                                         className="group flex flex-col"
                                     >
-                                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-orange-500/80 transition duration-300 shadow-md">
+                                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-amber-500/80 transition duration-300 shadow-md">
                                             {movie.poster_url ? (
                                                 <img
                                                     src={movie.poster_url}
@@ -303,13 +303,13 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                             )}
 
                                             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                                <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center pl-0.5 text-xs shadow-lg">
+                                                <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center pl-0.5 text-xs shadow-lg">
                                                     ▶
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <span className="mt-1.5 text-xs font-bold text-zinc-300 group-hover:text-orange-400 transition">
+                                        <span className="mt-1.5 text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition">
                                             EP.{ep.episode_number}
                                         </span>
                                     </Link>
@@ -342,7 +342,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-zinc-500">ผู้สร้าง</span>
-                                        <span className="text-orange-400 font-bold">Movies AI</span>
+                                        <span className="text-amber-400 font-bold">Movies AI</span>
                                     </div>
                                 </div>
                             </div>
@@ -361,7 +361,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                                     <img src={sim.poster_url} alt={sim.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
                                                 </div>
                                                 <div className="overflow-hidden">
-                                                    <h4 className="text-xs font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                                                    <h4 className="text-xs font-bold text-zinc-200 group-hover:text-amber-400 transition truncate">
                                                         {sim.title}
                                                     </h4>
                                                     <p className="text-[10px] text-zinc-500 mt-0.5">
@@ -412,7 +412,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                 >
                                     <summary className="flex items-center justify-between gap-3 text-sm font-bold text-zinc-200 px-4 py-3 cursor-pointer list-none hover:text-white transition">
                                         <span>{item.q}</span>
-                                        <span className="text-orange-400 text-base leading-none shrink-0 transition-transform group-open:rotate-45">
+                                        <span className="text-amber-400 text-base leading-none shrink-0 transition-transform group-open:rotate-45">
                                             ＋
                                         </span>
                                     </summary>

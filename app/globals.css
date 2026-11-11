@@ -1,13 +1,29 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════
+   MOVIES AI — Design System (ui-ux-pro-max)
+   Style: Dark Mode (OLED) | Accent: amber (แบรนด์)
+   ═══════════════════════════════════════════════════════════ */
 :root {
-  --background: #09090b;
-  --foreground: #ffffff;
+  --background: #0a0a0b;      /* deep black (OLED) */
+  --foreground: #fafafa;
+  --surface: #121214;         /* card surface */
+  --surface-2: #18181b;       /* elevated card */
+  --accent: #f59e0b;          /* amber แบรนด์ */
+  --accent-hi: #fbbf24;
+  --accent-dim: #b45309;
+  --on-accent: #1c1917;       /* ดำบนส้ม = contrast สูง */
+  --line: rgba(255, 255, 255, 0.07);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --color-on-accent: var(--on-accent);
   --font-sans: var(--font-noto-sans-thai), sans-serif;
 }
 
@@ -15,4 +31,40 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-noto-sans-thai), sans-serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* แถบเลื่อนแนวนอนของแถวการ์ด — ซ่อนแต่ยังเลื่อนได้ (touchpad/นิ้ว) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* แถบสีหน้าหัวข้อ section (แบบ glow อำพัน) */
+.sec-bar {
+  width: 4px;
+  height: 20px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+  flex-shrink: 0;
+}
+
+/* เคารพผู้ใช้ที่ปิด motion (a11y) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

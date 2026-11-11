@@ -97,17 +97,17 @@ export default function AuthPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-[#141218] via-[#0e0c10] to-[#1a1410] text-white flex flex-col items-center justify-center p-4 font-sans selection:bg-orange-500 selection:text-black">
+        <main className="min-h-screen bg-gradient-to-br from-[#141218] via-[#0e0c10] to-[#1a1410] text-white flex flex-col items-center justify-center p-4 font-sans selection:bg-amber-500 selection:text-black">
 
             <div className="mb-6 text-center">
                 <Link href="/" className="text-3xl font-black tracking-tighter inline-flex items-center gap-1.5">
-                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
-                    <span className="bg-orange-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-orange-500/20">AI</span>
+                    <span className="bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
+                    <span className="bg-amber-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-amber-500/20">AI</span>
                 </Link>
             </div>
 
             <div className="w-full max-w-lg bg-[#18151f]/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-zinc-800/80 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
 
                 <div className="mb-6">
                     <h1 className="text-2xl font-black text-white mb-1">
@@ -132,7 +132,7 @@ export default function AuthPage() {
                                         ? isUsernameValid
                                             ? 'border-emerald-500/80 focus:border-emerald-500'
                                             : 'border-red-500/80 focus:border-red-500'
-                                        : 'border-zinc-800 focus:border-orange-500'
+                                        : 'border-zinc-800 focus:border-amber-500'
                                         }`}
                                     placeholder="อย่างน้อย 4 ตัว"
                                 />
@@ -167,7 +167,7 @@ export default function AuthPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 bg-[#110f17] rounded-xl border border-zinc-800 text-white text-sm focus:outline-none focus:border-orange-500 transition placeholder:text-zinc-600"
+                            className="w-full px-4 py-3 bg-[#110f17] rounded-xl border border-zinc-800 text-white text-sm focus:outline-none focus:border-amber-500 transition placeholder:text-zinc-600"
                             placeholder="name@example.com"
                         />
                     </div>
@@ -183,7 +183,7 @@ export default function AuthPage() {
                                             required
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className={`w-full pl-4 pr-16 py-3 bg-[#110f17] rounded-xl border text-white text-sm focus:outline-none transition placeholder:text-zinc-600 ${password.length > 0 && !isPasswordValid ? 'border-red-500/80' : 'border-zinc-800 focus:border-orange-500'
+                                            className={`w-full pl-4 pr-16 py-3 bg-[#110f17] rounded-xl border text-white text-sm focus:outline-none transition placeholder:text-zinc-600 ${password.length > 0 && !isPasswordValid ? 'border-red-500/80' : 'border-zinc-800 focus:border-amber-500'
                                                 }`}
                                             placeholder="อย่างน้อย 8 ตัว"
                                         />
@@ -206,7 +206,7 @@ export default function AuthPage() {
                                             required
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className={`w-full pl-4 pr-16 py-3 bg-[#110f17] rounded-xl border text-white text-sm focus:outline-none transition placeholder:text-zinc-600 ${confirmPassword.length > 0 && !isPasswordMatch ? 'border-red-500/80' : 'border-zinc-800 focus:border-orange-500'
+                                            className={`w-full pl-4 pr-16 py-3 bg-[#110f17] rounded-xl border text-white text-sm focus:outline-none transition placeholder:text-zinc-600 ${confirmPassword.length > 0 && !isPasswordMatch ? 'border-red-500/80' : 'border-zinc-800 focus:border-amber-500'
                                                 }`}
                                             placeholder="พิมพ์รหัสผ่านอีกครั้ง"
                                         />
@@ -224,8 +224,8 @@ export default function AuthPage() {
 
                             <div className="flex flex-col gap-1">
                                 <div className="flex gap-1">
-                                    <div className={`h-1 flex-1 rounded-full ${password.length >= 4 ? 'bg-orange-500' : 'bg-zinc-800'}`} />
-                                    <div className={`h-1 flex-1 rounded-full ${password.length >= 8 ? 'bg-orange-500' : 'bg-zinc-800'}`} />
+                                    <div className={`h-1 flex-1 rounded-full ${password.length >= 4 ? 'bg-amber-500' : 'bg-zinc-800'}`} />
+                                    <div className={`h-1 flex-1 rounded-full ${password.length >= 8 ? 'bg-amber-500' : 'bg-zinc-800'}`} />
                                     <div className={`h-1 flex-1 rounded-full ${isPasswordValid && /[0-9]/.test(password) ? 'bg-emerald-500' : 'bg-zinc-800'}`} />
                                 </div>
                                 {password.length > 0 && !isPasswordValid ? (
@@ -241,7 +241,7 @@ export default function AuthPage() {
                         <div className="space-y-1">
                             <div className="flex items-center justify-between">
                                 <label className="text-xs font-bold text-zinc-300">รหัสผ่าน</label>
-                                <Link href="/forgot-password" className="text-[11px] text-orange-400 hover:text-orange-300 transition font-medium">
+                                <Link href="/forgot-password" className="text-[11px] text-amber-400 hover:text-amber-300 transition font-medium">
                                     ลืมรหัสผ่าน?
                                 </Link>
                             </div>
@@ -251,7 +251,7 @@ export default function AuthPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-4 pr-10 py-3 bg-[#110f17] rounded-xl border border-zinc-800 text-white text-sm focus:outline-none focus:border-orange-500 transition placeholder:text-zinc-600"
+                                    className="w-full pl-4 pr-10 py-3 bg-[#110f17] rounded-xl border border-zinc-800 text-white text-sm focus:outline-none focus:border-amber-500 transition placeholder:text-zinc-600"
                                     placeholder="••••••••"
                                 />
                                 <button
@@ -268,7 +268,7 @@ export default function AuthPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black rounded-xl transition shadow-lg shadow-orange-500/25 text-sm tracking-wide disabled:opacity-50 active:scale-[0.99]"
+                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-400 hover:to-amber-400 text-zinc-950 font-black rounded-xl transition shadow-lg shadow-amber-500/25 text-sm tracking-wide disabled:opacity-50 active:scale-[0.99]"
                     >
                         {loading ? 'กำลังดำเนินการ...' : isSignUp ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
                     </button>
@@ -289,9 +289,9 @@ export default function AuthPage() {
                         className="text-xs text-zinc-400 hover:text-white transition font-medium"
                     >
                         {isSignUp ? (
-                            <>มีบัญชีอยู่แล้ว? <span className="text-orange-400 font-bold">เข้าสู่ระบบ</span></>
+                            <>มีบัญชีอยู่แล้ว? <span className="text-amber-400 font-bold">เข้าสู่ระบบ</span></>
                         ) : (
-                            <>ยังไม่มีบัญชีผู้ใช้? <span className="text-orange-400 font-bold">สมัครสมาชิก</span></>
+                            <>ยังไม่มีบัญชีผู้ใช้? <span className="text-amber-400 font-bold">สมัครสมาชิก</span></>
                         )}
                     </button>
                 </div>

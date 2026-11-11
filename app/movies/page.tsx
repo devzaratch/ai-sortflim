@@ -132,7 +132,7 @@ function MoviesContent() {
     const displayedTotalEps = filteredMovies.reduce((acc, m) => acc + (epCounts[m.id] || 0), 0)
 
     return (
-        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-orange-500 selection:text-black flex flex-col justify-between">
+        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-amber-500 selection:text-black flex flex-col justify-between">
 
             <div>
                 <Header
@@ -144,7 +144,7 @@ function MoviesContent() {
 
                     {/* แถบแจ้งโหมดค้นหา / เรื่องที่เก็บไว้ */}
                     {(urlSearch || savedOnly) && (
-                        <div className="flex flex-wrap items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-300 px-4 py-2.5 rounded-xl text-xs font-bold">
+                        <div className="flex flex-wrap items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-300 px-4 py-2.5 rounded-xl text-xs font-bold">
                             {savedOnly ? (
                                 <span>❤️ แสดงเฉพาะเรื่องที่คุณเก็บไว้</span>
                             ) : (
@@ -187,7 +187,7 @@ function MoviesContent() {
                                         key={genre}
                                         onClick={() => handleGenreChange(genre)}
                                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${selectedGenre === genre
-                                            ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
+                                            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
                                             : 'bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 hover:text-white'
                                             }`}
                                     >
@@ -209,7 +209,7 @@ function MoviesContent() {
                                     type="checkbox"
                                     checked={completedOnly}
                                     onChange={(e) => setCompletedOnly(e.target.checked)}
-                                    className="w-4 h-4 accent-orange-500 rounded cursor-pointer"
+                                    className="w-4 h-4 accent-amber-500 rounded cursor-pointer"
                                 />
                                 <span>📌 จบแล้วเท่านั้น</span>
                             </label>
@@ -218,7 +218,7 @@ function MoviesContent() {
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-xl text-xs font-bold focus:outline-none focus:border-orange-500"
+                                    className="bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-xl text-xs font-bold focus:outline-none focus:border-amber-500"
                                 >
                                     <option value="latest">ใหม่ล่าสุด</option>
                                     <option value="popular">ยอดนิยม</option>
@@ -235,7 +235,7 @@ function MoviesContent() {
                         ) : filteredMovies.length === 0 ? (
                             <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-12 text-center text-zinc-500 text-xs space-y-3">
                                 <p>ไม่พบละครในหมวดหมู่ที่คุณเลือก</p>
-                                <button onClick={() => handleGenreChange('ทุกแนว')} className="text-orange-400 hover:underline font-bold">
+                                <button onClick={() => handleGenreChange('ทุกแนว')} className="text-amber-400 hover:underline font-bold">
                                     ดูละครทั้งหมด
                                 </button>
                             </div>
@@ -243,7 +243,7 @@ function MoviesContent() {
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-5">
                                 {filteredMovies.map((movie) => (
                                     <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
-                                        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+                                        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-amber-500/70 transition duration-300 shadow-xl">
 
                                             {/* Badge: จบแล้ว */}
                                             {movie.is_completed && (
@@ -269,7 +269,7 @@ function MoviesContent() {
                                         </div>
 
                                         <div className="mt-2.5 px-0.5 space-y-0.5">
-                                            <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                                            <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-amber-400 transition truncate">
                                                 {movie.title}
                                             </h4>
                                             <p className="text-[10px] text-zinc-500 truncate">

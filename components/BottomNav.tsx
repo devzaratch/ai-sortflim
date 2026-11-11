@@ -26,11 +26,11 @@ function BottomNavInner() {
     }
 
     return (
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[#0b0b0d]/95 backdrop-blur-xl border-t border-zinc-800/70 flex items-stretch justify-around pb-[env(safe-area-inset-bottom)]">
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[#0c0c0e]/90 backdrop-blur-xl border-t border-white/[0.07] flex items-stretch justify-around pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5">
             <Link
                 href="/"
                 className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 transition ${
-                    pathname === '/' ? 'text-orange-400' : 'text-zinc-400 hover:text-zinc-200'
+                    pathname === '/' ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
                 <Home className="w-5 h-5" />
@@ -40,7 +40,7 @@ function BottomNavInner() {
             <Link
                 href="/movies"
                 className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 transition ${
-                    pathname === '/movies' && !savedActive ? 'text-orange-400' : 'text-zinc-400 hover:text-zinc-200'
+                    pathname === '/movies' && !savedActive ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
                 <LayoutGrid className="w-5 h-5" />
@@ -58,7 +58,7 @@ function BottomNavInner() {
             <Link
                 href="/movies?saved=1"
                 className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 transition ${
-                    savedActive ? 'text-orange-400' : 'text-zinc-400 hover:text-zinc-200'
+                    savedActive ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
                 <Heart className="w-5 h-5" />

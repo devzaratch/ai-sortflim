@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
@@ -198,7 +198,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
         return (
             <div className="min-h-screen bg-[#0b0b0d] text-white flex flex-col items-center justify-center p-6 text-center space-y-4">
                 <p className="text-red-400 text-sm font-bold">ไม่พบรหัสภาพยนตร์ (movieId) ในลิงก์</p>
-                <Link href="/" className="bg-orange-500 text-black px-4 py-2 rounded-xl font-bold text-xs">
+                <Link href="/" className="bg-amber-500 text-black px-4 py-2 rounded-xl font-bold text-xs">
                     กลับสู่หน้าแรก
                 </Link>
             </div>
@@ -213,7 +213,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
         return (
             <div className="min-h-screen bg-[#0b0b0d] text-white flex flex-col items-center justify-center p-6 text-center space-y-4">
                 <p className="text-red-400 text-sm font-bold">{errorMsg}</p>
-                <Link href="/" onClick={stopAndClearVideo} className="bg-orange-500 text-black px-4 py-2 rounded-xl font-bold text-xs">
+                <Link href="/" onClick={stopAndClearVideo} className="bg-amber-500 text-black px-4 py-2 rounded-xl font-bold text-xs">
                     กลับสู่หน้าแรก
                 </Link>
             </div>
@@ -226,7 +226,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
     const genreTags = movie?.genre ? movie.genre.split(',').map((t: string) => t.trim()) : []
 
     return (
-        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-orange-500 selection:text-black flex flex-col justify-between">
+        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-amber-500 selection:text-black flex flex-col justify-between">
 
             <div>
                 <Header activeGenre={genreTags[0] ?? null} onNavigate={stopAndClearVideo} />
@@ -255,7 +255,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                         </p>
                                         <button
                                             onClick={handleUpgradeVip}
-                                            className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-black font-extrabold rounded-2xl shadow-xl hover:brightness-110 transition text-sm"
+                                            className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-500 text-black font-extrabold rounded-2xl shadow-xl hover:brightness-110 transition text-sm"
                                         >
                                             สมัครสมาชิก VIP รับชมได้ทันที
                                         </button>
@@ -309,7 +309,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                             {/* Title & Action Bar */}
                             <div className="space-y-4">
                                 <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-                                    {movie?.title} <span className="text-orange-500">EP.{currentEp?.episode_number}</span>
+                                    {movie?.title} <span className="text-amber-500">EP.{currentEp?.episode_number}</span>
                                 </h1>
 
                                 <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-bold">
@@ -324,7 +324,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                         <button
                                             disabled={currentIndex >= episodes.length - 1}
                                             onClick={() => setCurrentEp(episodes[currentIndex + 1])}
-                                            className="bg-orange-500 hover:bg-orange-400 text-white disabled:opacity-40 px-5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-orange-500/20"
+                                            className="bg-amber-500 hover:bg-amber-400 text-white disabled:opacity-40 px-5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-amber-500/20"
                                         >
                                             ตอนถัดไป ⏭
                                         </button>
@@ -341,7 +341,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                             type="checkbox"
                                             checked={autoPlayNext}
                                             onChange={(e) => setAutoPlayNext(e.target.checked)}
-                                            className="w-4 h-4 accent-orange-500 rounded cursor-pointer"
+                                            className="w-4 h-4 accent-amber-500 rounded cursor-pointer"
                                         />
                                         <span>เล่นตอนถัดไปอัตโนมัติ</span>
                                     </label>
@@ -366,7 +366,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                                 key={ep.id}
                                                 onClick={() => setCurrentEp(ep)}
                                                 className={`relative py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center ${isSelected
-                                                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 ring-2 ring-orange-400'
+                                                        ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30 ring-2 ring-amber-400'
                                                         : isEpLocked
                                                             ? 'bg-zinc-800/50 text-zinc-500 hover:bg-zinc-700/60'
                                                             : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white'
@@ -405,14 +405,14 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                         <section className="space-y-4 pt-6 border-t border-zinc-800/60">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-black text-white flex items-center gap-2">
-                                    <span className="text-orange-500">🔥</span> เรื่องอื่นที่น่าดู
+                                    <span className="text-amber-500">🔥</span> เรื่องอื่นที่น่าดู
                                 </h3>
                             </div>
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                 {otherMovies.map((m) => (
                                     <Link key={m.id} href={`/watch?movieId=${m.id}`} onClick={stopAndClearVideo} className="group flex flex-col">
-                                        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-orange-500/70 transition duration-300 shadow-xl">
+                                        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-amber-500/70 transition duration-300 shadow-xl">
                                             {m.poster_url ? (
                                                 <img
                                                     src={m.poster_url}
@@ -423,13 +423,13 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                                 <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
                                             )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
-                                                <span className="text-[10px] font-bold text-orange-400 bg-black/60 px-2 py-0.5 rounded backdrop-blur">
+                                                <span className="text-[10px] font-bold text-amber-400 bg-black/60 px-2 py-0.5 rounded backdrop-blur">
                                                     ดูเรื่องนี้ →
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="mt-2 px-0.5">
-                                            <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-orange-400 transition truncate">
+                                            <h4 className="text-xs sm:text-sm font-bold text-zinc-200 group-hover:text-amber-400 transition truncate">
                                                 {m.title}
                                             </h4>
                                         </div>

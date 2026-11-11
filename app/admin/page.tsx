@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
 
         setStats([
             { label: 'เรื่อง', value: moviesCount, color: 'text-emerald-400' },
-            { label: 'ตอน', value: episodesCount, color: 'text-orange-400' },
+            { label: 'ตอน', value: episodesCount, color: 'text-amber-400' },
             { label: 'ผู้ใช้', value: usersCount, color: 'text-sky-400' },
             { label: 'ดูต่อ', value: historyCount, color: 'text-violet-400' },
         ])
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
         return (
             <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center">
                 <div className="flex items-center gap-6">
-                    <div className="w-10 h-10 border-2 border-zinc-700 border-t-orange-500 rounded-full animate-spin" />
+                    <div className="w-10 h-10 border-2 border-zinc-700 border-t-amber-500 rounded-full animate-spin" />
                     <p className="text-lg text-zinc-300">กำลังโหลดสถิติ...</p>
                 </div>
             </div>
@@ -122,11 +122,11 @@ export default function AdminDashboard() {
                                     <span className="text-sm text-zinc-300 w-32 truncate">{g.genre}</span>
                                     <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-orange-500 rounded-full"
+                                            className="h-full bg-amber-500 rounded-full"
                                             style={{ width: `${(g.count / genres[0].count) * 100}%` }}
                                         />
                                     </div>
-                                    <span className="text-xs font-bold text-orange-400 w-8 text-right">{g.count}</span>
+                                    <span className="text-xs font-bold text-amber-400 w-8 text-right">{g.count}</span>
                                 </div>
                             ))}
                         </div>

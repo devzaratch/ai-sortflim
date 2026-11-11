@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import LegalPage from '@/components/LegalPage'
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default function DmcaPage() {
                 <h2 className="text-base font-bold text-white">3. ช่องทางติดต่อ</h2>
                 <p>
                     ส่งคำร้องมาที่{' '}
-                    <a href="mailto:dmca@moviesai.com" className="text-orange-400 hover:underline font-bold">
+                    <a href="mailto:dmca@moviesai.com" className="text-amber-400 hover:underline font-bold">
                         dmca@moviesai.com
                     </a>{' '}
                     เราจะตรวจสอบและดำเนินการภายใน 7 วันทำการ

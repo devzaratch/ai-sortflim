@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -31,9 +31,9 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-[#141218] via-[#0e0c10] to-[#1a1410] text-white flex flex-col items-center justify-center p-4 font-sans selection:bg-orange-500 selection:text-black">
+        <main className="min-h-screen bg-gradient-to-br from-[#141218] via-[#0e0c10] to-[#1a1410] text-white flex flex-col items-center justify-center p-4 font-sans selection:bg-amber-500 selection:text-black">
             <div className="w-full max-w-md bg-[#18151f]/95 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-zinc-800/80 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
 
                 <div className="mb-6">
                     <h1 className="text-2xl font-black text-white mb-1">ลืมรหัสผ่าน</h1>
@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 bg-[#110f17] rounded-xl border border-zinc-800 text-white text-sm focus:outline-none focus:border-orange-500 transition placeholder:text-zinc-600"
+                            className="w-full px-4 py-3 bg-[#110f17] rounded-xl border border-zinc-800 text-white text-sm focus:outline-none focus:border-amber-500 transition placeholder:text-zinc-600"
                             placeholder="name@example.com"
                         />
                     </div>
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-black rounded-xl transition shadow-lg shadow-orange-500/25 text-sm tracking-wide disabled:opacity-50"
+                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-400 hover:to-amber-400 text-zinc-950 font-black rounded-xl transition shadow-lg shadow-amber-500/25 text-sm tracking-wide disabled:opacity-50"
                     >
                         {loading ? 'กำลังส่งข้อมูล...' : 'ส่งลิงก์รีเซ็ตรหัสผ่าน'}
                     </button>
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <div className="mt-6 pt-5 border-t border-zinc-800/80 text-center">
-                    <Link href="/login" className="text-xs text-orange-400 hover:underline font-bold">
+                    <Link href="/login" className="text-xs text-amber-400 hover:underline font-bold">
                         ← กลับไปหน้าเข้าสู่ระบบ
                     </Link>
                 </div>

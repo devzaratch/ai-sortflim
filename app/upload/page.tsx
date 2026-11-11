@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -106,7 +106,7 @@ export default function UploadPage() {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="เช่น ละครเรื่องใหม่"
-                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                         />
                     </div>
 
@@ -117,7 +117,7 @@ export default function UploadPage() {
                             value={genre}
                             onChange={(e) => setGenre(e.target.value)}
                             placeholder="เช่น ดราม่า, โรแมนติก"
-                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                         />
                     </div>
 
@@ -128,7 +128,7 @@ export default function UploadPage() {
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="รายละเอียดเรื่องย่อ"
                             rows={3}
-                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 resize-none"
+                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 resize-none"
                         />
                     </div>
 
@@ -139,7 +139,7 @@ export default function UploadPage() {
                             value={streamPath}
                             onChange={(e) => setStreamPath(e.target.value)}
                             placeholder="https://..."
-                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                         />
                     </div>
 
@@ -150,7 +150,7 @@ export default function UploadPage() {
                             value={episodeNumber}
                             onChange={(e) => setEpisodeNumber(e.target.value)}
                             min="1"
-                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                         />
                     </div>
 
@@ -161,7 +161,7 @@ export default function UploadPage() {
                             value={movieId}
                             onChange={(e) => setMovieId(e.target.value)}
                             placeholder="ปล่อยว่างถ้าต้องการสร้างเรื่องใหม่"
-                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                            className="w-full p-2 rounded-xl border border-zinc-700/60 bg-zinc-900 text-white text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                         />
                     </div>
 
@@ -170,7 +170,7 @@ export default function UploadPage() {
                             type="checkbox"
                             checked={isCompleted}
                             onChange={(e) => setIsCompleted(e.target.checked)}
-                            className="rounded border-zinc-700 bg-zinc-900 text-orange-600 focus:ring-orange-500"
+                            className="rounded border-zinc-700 bg-zinc-900 text-amber-600 focus:ring-amber-500"
                         />
                         <label className="text-xs text-zinc-400">เรื่องนี้จบแล้ว</label>
                     </div>
@@ -178,7 +178,7 @@ export default function UploadPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-black font-extrabold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'กำลังอัปโหลด...' : 'อัปโหลดตอน'}
                     </button>
@@ -187,7 +187,7 @@ export default function UploadPage() {
                 <div className="text-center mt-6">
                     <Link
                         href="/"
-                        className="text-xs text-orange-400 hover:underline font-bold"
+                        className="text-xs text-amber-400 hover:underline font-bold"
                     >
                         ← กลับหน้าแรก
                     </Link>

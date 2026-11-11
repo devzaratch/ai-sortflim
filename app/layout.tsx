@@ -54,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-full flex flex-col bg-zinc-950 text-white font-sans pb-[60px] md:pb-0">
+      <body className="min-h-full flex flex-col bg-[#0a0a0b] text-white font-sans pb-[60px] md:pb-0">
         {children}
         <BottomNav />
       </body>

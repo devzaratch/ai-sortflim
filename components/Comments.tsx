@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -104,13 +104,13 @@ export default function Comments({ movieId }: { movieId: string }) {
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="พิมพ์ความคิดเห็นของคุณที่นี่..."
                     rows={3}
-                    className="w-full p-3 rounded-xl border border-zinc-700/60 bg-zinc-900/40 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 resize-none"
+                    className="w-full p-3 rounded-xl border border-zinc-700/60 bg-zinc-900/40 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 resize-none"
                     disabled={loading}
                 />
                 <button
                     onClick={addComment}
                     disabled={loading || !newComment.trim()}
-                    className="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-black text-xs tracking-wide transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-black text-xs tracking-wide transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading ? 'กำลังส่ง...' : 'ส่งความคิดเห็น'}
                 </button>

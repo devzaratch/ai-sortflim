@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import Footer from '@/components/Footer'
 
 interface LegalPageProps {
@@ -14,8 +14,8 @@ export default function LegalPage({ title, updatedAt, children }: LegalPageProps
             <div>
                 <header className="sticky top-0 z-50 bg-[#0b0b0d]/90 backdrop-blur-xl border-b border-zinc-800/60 px-4 lg:px-12 py-3.5">
                     <Link href="/" className="text-2xl font-black tracking-tighter text-white inline-flex items-center gap-1.5">
-                        <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
-                        <span className="bg-orange-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-orange-500/20">AI</span>
+                        <span className="bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
+                        <span className="bg-amber-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-amber-500/20">AI</span>
                     </Link>
                 </header>
 
@@ -28,7 +28,7 @@ export default function LegalPage({ title, updatedAt, children }: LegalPageProps
                     <div className="space-y-5 text-sm text-zinc-300 leading-relaxed">{children}</div>
 
                     <div className="pt-6 border-t border-zinc-800/80">
-                        <Link href="/" className="text-xs text-orange-400 hover:underline font-bold">
+                        <Link href="/" className="text-xs text-amber-400 hover:underline font-bold">
                             ← กลับหน้าแรก
                         </Link>
                     </div>

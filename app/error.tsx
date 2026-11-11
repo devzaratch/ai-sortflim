@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect } from 'react'
 import Link from 'next/link'
@@ -24,7 +24,7 @@ export default function GlobalError({
             <div className="flex items-center gap-3">
                 <button
                     onClick={reset}
-                    className="bg-orange-500 hover:bg-orange-400 text-white font-extrabold px-5 py-2.5 rounded-xl transition text-xs shadow-lg shadow-orange-500/25"
+                    className="bg-amber-500 hover:bg-amber-400 text-white font-extrabold px-5 py-2.5 rounded-xl transition text-xs shadow-lg shadow-amber-500/25"
                 >
                     ลองอีกครั้ง
                 </button>

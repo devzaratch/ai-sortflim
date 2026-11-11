@@ -18,8 +18,8 @@ export default function Footer() {
                     {/* Column 1: Brand Info */}
                     <div className="lg:col-span-2 space-y-4">
                         <Link href="/" className="text-2xl font-black tracking-tighter text-white inline-flex items-center gap-1.5">
-                            <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
-                            <span className="bg-orange-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-orange-500/20">AI</span>
+                            <span className="bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
+                            <span className="bg-amber-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-amber-500/20">AI</span>
                         </Link>
 
                         <p className="text-xs text-zinc-400 leading-relaxed max-w-sm">
@@ -34,7 +34,7 @@ export default function Footer() {
                                     href="https://facebook.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-orange-400 hover:border-orange-500/50 transition"
+                                    className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-amber-400 hover:border-amber-500/50 transition"
                                     title="Facebook"
                                 >
                                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@ export default function Footer() {
                                     href="https://tiktok.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-orange-400 hover:border-orange-500/50 transition"
+                                    className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-amber-400 hover:border-amber-500/50 transition"
                                     title="TikTok"
                                 >
                                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -60,7 +60,7 @@ export default function Footer() {
                                     href="https://youtube.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-orange-400 hover:border-orange-500/50 transition"
+                                    className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-amber-400 hover:border-amber-500/50 transition"
                                     title="YouTube"
                                 >
                                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -76,19 +76,19 @@ export default function Footer() {
                         <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">หมวดหมู่ยอดฮิต</h4>
                         <ul className="space-y-2 text-xs">
                             <li>
-                                <Link href="/movies?genre=ดราม่า" className="hover:text-orange-400 transition">ละคร AI แนวดราม่า</Link>
+                                <Link href="/movies?genre=ดราม่า" className="hover:text-amber-400 transition">ละคร AI แนวดราม่า</Link>
                             </li>
                             <li>
-                                <Link href="/movies?genre=โรแมนติก" className="hover:text-orange-400 transition">ละคร AI โรแมนติก</Link>
+                                <Link href="/movies?genre=โรแมนติก" className="hover:text-amber-400 transition">ละคร AI โรแมนติก</Link>
                             </li>
                             <li>
-                                <Link href="/movies?genre=ย้อนยุค" className="hover:text-orange-400 transition">ละคร AI ย้อนยุค</Link>
+                                <Link href="/movies?genre=ย้อนยุค" className="hover:text-amber-400 transition">ละคร AI ย้อนยุค</Link>
                             </li>
                             <li>
-                                <Link href="/movies?genre=แก้แค้น" className="hover:text-orange-400 transition">ซีรีส์ AI แนวแก้แค้น</Link>
+                                <Link href="/movies?genre=แก้แค้น" className="hover:text-amber-400 transition">ซีรีส์ AI แนวแก้แค้น</Link>
                             </li>
                             <li>
-                                <Link href="/movies?genre=วาย" className="hover:text-orange-400 transition">ซีรีส์ AI แนว Y</Link>
+                                <Link href="/movies?genre=วาย" className="hover:text-amber-400 transition">ซีรีส์ AI แนว Y</Link>
                             </li>
                         </ul>
                     </div>
@@ -98,16 +98,16 @@ export default function Footer() {
                         <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">เมนูแนะนำ</h4>
                         <ul className="space-y-2 text-xs">
                             <li>
-                                <Link href="/" className="hover:text-orange-400 transition">หน้าแรก</Link>
+                                <Link href="/" className="hover:text-amber-400 transition">หน้าแรก</Link>
                             </li>
                             <li>
-                                <Link href="/movies" className="hover:text-orange-400 transition">ซีรีส์ทั้งหมด</Link>
+                                <Link href="/movies" className="hover:text-amber-400 transition">ซีรีส์ทั้งหมด</Link>
                             </li>
                             <li>
-                                <Link href="/movies?status=completed" className="hover:text-orange-400 transition">ซีรีส์จบแล้ว</Link>
+                                <Link href="/movies?status=completed" className="hover:text-amber-400 transition">ซีรีส์จบแล้ว</Link>
                             </li>
                             <li>
-                                <Link href="/login" className="hover:text-orange-400 transition">เข้าสู่ระบบ / สมัครสมาชิก</Link>
+                                <Link href="/login" className="hover:text-amber-400 transition">เข้าสู่ระบบ / สมัครสมาชิก</Link>
                             </li>
                         </ul>
                     </div>
@@ -117,16 +117,16 @@ export default function Footer() {
                         <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">ช่วยเหลือ & นโยบาย</h4>
                         <ul className="space-y-2 text-xs">
                             <li>
-                                <Link href="/privacy-policy" className="hover:text-orange-400 transition">นโยบายความเป็นส่วนตัว</Link>
+                                <Link href="/privacy-policy" className="hover:text-amber-400 transition">นโยบายความเป็นส่วนตัว</Link>
                             </li>
                             <li>
-                                <Link href="/terms-of-service" className="hover:text-orange-400 transition">ข้อตกลงและเงื่อนไข</Link>
+                                <Link href="/terms-of-service" className="hover:text-amber-400 transition">ข้อตกลงและเงื่อนไข</Link>
                             </li>
                             <li>
-                                <Link href="/dmca" className="hover:text-orange-400 transition">แจ้งละเมิดลิขสิทธิ์ (DMCA)</Link>
+                                <Link href="/dmca" className="hover:text-amber-400 transition">แจ้งละเมิดลิขสิทธิ์ (DMCA)</Link>
                             </li>
                             <li>
-                                <a href="mailto:support@moviesai.com" className="hover:text-orange-400 transition">ติดต่อเรา / แจ้งปัญหา</a>
+                                <a href="mailto:support@moviesai.com" className="hover:text-amber-400 transition">ติดต่อเรา / แจ้งปัญหา</a>
                             </li>
                         </ul>
                     </div>
