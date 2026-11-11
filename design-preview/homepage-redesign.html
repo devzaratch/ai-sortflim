@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOVIES AI — Design Preview (ui-ux-pro-max)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700;900&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   MOVIES AI — Design System (from ui-ux-pro-max)
+   Style : Dark Mode (OLED) + Vibrant block-based
+   Tokens: Cinema dark + amber accent (แบรนด์เรา)
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --bg:        #0A0A0B;   /* deep black (OLED) */
+  --card:      #121214;   /* card surface */
+  --card-2:    #18181B;   /* elevated card */
+  --muted:     #A1A1AA;   /* secondary text */
+  --fg:        #FAFAFA;   /* primary text */
+  --accent:    #F59E0B;   /* amber (แบรนด์) */
+  --accent-hi: #FBBF24;
+  --accent-dim:#B45309;
+  --on-accent: #1C1917;   /* ดำบนส้ม = contrast สูง */
+  --border:    rgba(255,255,255,.07);
+  --radius:    14px;
+  --radius-lg: 20px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --tr: 220ms cubic-bezier(.4,0,.2,1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Noto Sans Thai', 'Inter', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img { display:block; }
+a { color:inherit; text-decoration:none; cursor:pointer; }
+button { cursor:pointer; font-family:inherit; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+.wrap { max-width:1200px; margin:0 auto; padding:0 var(--space-4); }
+@media(min-width:768px){ .wrap { padding:0 var(--space-6); } }
+
+/* ── Badge: นี่คือ mockup ─────────────────────────── */
+.mock-badge {
+  position:fixed; top:12px; right:12px; z-index:99;
+  background:var(--accent); color:var(--on-accent);
+  font-size:11px; font-weight:900; padding:6px 12px;
+  border-radius:999px; letter-spacing:.5px;
+  box-shadow:0 4px 24px rgba(245,158,11,.35);
+}
+
+/* ── Header ─────────────────────────────────────── */
+header {
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,10,11,.82);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.hd-row {
+  display:flex; align-items:center; gap:var(--space-4);
+  padding:var(--space-3) 0;
+}
+.logo { display:flex; align-items:center; gap:10px; font-family:'Inter'; font-weight:800; font-size:20px; letter-spacing:-.5px; }
+.logo .mark {
+  width:34px; height:34px; border-radius:10px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-dim));
+  display:grid; place-items:center; color:var(--on-accent);
+  box-shadow:0 0 18px rgba(245,158,11,.4);
+  font-size:17px;
+}
+.logo .ai { color:var(--accent); }
+.search {
+  flex:1; max-width:420px; margin:0 auto;
+  display:flex; align-items:center; gap:10px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:999px; padding:9px 16px;
+  transition:border-color var(--tr), background var(--tr);
+}
+.search:hover { border-color:rgba(245,158,11,.35); }
+.search svg { color:var(--muted); flex-shrink:0; }
+.search input {
+  background:none; border:none; outline:none;
+  color:var(--fg); width:100%; font-size:14px; font-family:inherit;
+}
+.search input::placeholder { color:var(--muted); }
+.icon-btn {
+  width:42px; height:42px; border-radius:999px; border:1px solid var(--border);
+  background:var(--card); color:var(--fg);
+  display:grid; place-items:center;
+  transition:background var(--tr), border-color var(--tr), transform var(--tr);
+}
+.icon-btn:hover { background:var(--card-2); border-color:rgba(245,158,11,.4); transform:translateY(-1px); }
+.genre-row {
+  display:flex; gap:var(--space-2);
+  padding:0 0 var(--space-3);
+  overflow-x:auto; scrollbar-width:none;
+}
+.genre-row::-webkit-scrollbar { display:none; }
+.genre-row a {
+  flex-shrink:0; font-size:13px; font-weight:700; color:var(--muted);
+  padding:7px 16px; border-radius:999px; border:1px solid transparent;
+  transition:all var(--tr);
+}
+.genre-row a:hover { color:var(--fg); background:var(--card-2); }
+.genre-row a.active { color:var(--on-accent); background:var(--accent); }
+
+/* ── Hero ───────────────────────────────────────── */
+.hero { position:relative; margin-bottom:var(--space-7); }
+.hero-card {
+  position:relative; overflow:hidden;
+  border-radius:var(--radius-lg);
+  border:1px solid var(--border);
+  min-height:480px;
+  display:flex; align-items:flex-end;
+  background:linear-gradient(180deg,#1a1207 0%, #0A0A0B 70%);
+}
+.hero-card::before {  /* amber ambient glow */
+  content:''; position:absolute; top:-120px; left:50%; transform:translateX(-50%);
+  width:520px; height:340px; border-radius:999px;
+  background:radial-gradient(closest-side, rgba(245,158,11,.22), transparent 70%);
+  filter:blur(30px); pointer-events:none;
+}
+.hero-grid { display:grid; grid-template-columns:1fr 1.15fr; gap:var(--space-6); align-items:end; width:100%; }
+.hero-poster {
+  justify-self:center; margin-top:var(--space-6);
+  width:270px; aspect-ratio:9/16; border-radius:var(--radius);
+  overflow:hidden; position:relative;
+  box-shadow:0 24px 60px rgba(0,0,0,.6), 0 0 60px rgba(245,158,11,.14);
+  border:1px solid rgba(255,255,255,.08);
+}
+.hero-poster img { width:100%; height:100%; object-fit:cover; }
+.hero-info { padding:0 var(--space-6) var(--space-6); }
+@media(min-width:768px){ .hero-info { padding:var(--space-5) var(--space-6) var(--space-6) 0; } }
+.pill-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:var(--space-4); }
+.pill {
+  font-size:11px; font-weight:700; padding:5px 12px; border-radius:999px;
+  background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--muted);
+}
+.pill.hot { background:rgba(245,158,11,.15); border-color:rgba(245,158,11,.35); color:var(--accent-hi); }
+.hero-info h1 { font-size:clamp(26px,4.5vw,44px); font-weight:900; letter-spacing:-.5px; line-height:1.15; margin-bottom:var(--space-3); }
+.hero-info p.desc {
+  color:var(--muted); font-size:14.5px; max-width:52ch;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+  margin-bottom:var(--space-5);
+}
+.cta-row { display:flex; flex-wrap:wrap; gap:var(--space-3); align-items:center; }
+.btn {
+  display:inline-flex; align-items:center; gap:9px;
+  font-weight:900; font-size:15px; border-radius:999px; border:none;
+  padding:13px 26px; transition:all var(--tr);
+}
+.btn-primary {
+  background:linear-gradient(135deg, var(--accent-hi), var(--accent));
+  color:var(--on-accent);
+  box-shadow:0 6px 28px rgba(245,158,11,.35);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 36px rgba(245,158,11,.5); }
+.btn-ghost {
+  background:rgba(255,255,255,.06); color:var(--fg);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover { background:var(--card-2); border-color:rgba(245,158,11,.35); }
+.meta-line { display:flex; align-items:center; gap:14px; color:var(--muted); font-size:12.5px; font-weight:500; margin-top:var(--space-4); }
+.meta-line b { color:var(--accent); font-weight:700; }
+
+/* ── Section headers ────────────────────────────── */
+section { margin-bottom:var(--space-7); }
+.sec-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:var(--space-4);
+}
+.sec-head h2 { font-size:20px; font-weight:900; display:flex; align-items:center; gap:10px; letter-spacing:-.3px; }
+.sec-head h2::before {
+  content:''; width:4px; height:20px; border-radius:99px;
+  background:linear-gradient(180deg,var(--accent-hi),var(--accent));
+  box-shadow:0 0 12px rgba(245,158,11,.5);
+}
+.sec-head a.more { font-size:12.5px; font-weight:700; color:var(--muted); transition:color var(--tr); display:flex; align-items:center; gap:4px; }
+.sec-head a.more:hover { color:var(--accent); }
+
+/* ── Rows (scroll-snap horizontal) ──────────────── */
+.row {
+  display:flex; gap:var(--space-3);
+  overflow-x:auto; scroll-snap-type:x mandatory;
+  padding-bottom:var(--space-2); scrollbar-width:none;
+  margin:0 calc(-1 * var(--space-4)); padding-left:var(--space-4); padding-right:var(--space-4);
+}
+@media(min-width:768px){ .row { margin:0 calc(-1 * var(--space-6)); padding-left:var(--space-6); padding-right:var(--space-6); } }
+.row::-webkit-scrollbar { display:none; }
+.card { scroll-snap-align:start; flex-shrink:0; width:132px; transition:transform var(--tr); }
+.card:hover { transform:translateY(-4px); }
+.card .thumb {
+  position:relative; width:132px; aspect-ratio:9/16; border-radius:var(--radius);
+  overflow:hidden; background:var(--card-2);
+  border:1px solid var(--border);
+}
+.card .thumb img { width:100%; height:100%; object-fit:cover; transition:transform 400ms ease; }
+.card:hover .thumb img { transform:scale(1.06); }
+.card .thumb::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 55%, rgba(10,10,11,.85));
+}
+.ep-badge {
+  position:absolute; top:8px; left:8px; z-index:2;
+  background:rgba(10,10,11,.75); backdrop-filter:blur(6px);
+  color:var(--accent-hi); font-size:10px; font-weight:900;
+  padding:3px 8px; border-radius:99px; border:1px solid rgba(245,158,11,.3);
+}
+.ep-badge.full { color:#4ADE80; border-color:rgba(74,222,128,.3); }
+.card h3 { font-size:12.5px; font-weight:700; margin-top:9px; line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card .sub { font-size:10.5px; color:var(--muted); margin-top:3px; font-weight:500; }
+
+/* การ์ดแบบกว้าง (ดูต่อ) */
+.card-wide { width:246px; }
+.card-wide .thumb { width:100%; aspect-ratio:16/9; border-radius:var(--radius); }
+.progress {
+  position:absolute; bottom:0; left:0; height:3px; z-index:3;
+  background:var(--accent); border-radius:99px;
+  box-shadow:0 0 8px rgba(245,158,11,.6);
+}
+
+/* ── Grid ยอดนิยม (desktop) ─────────────────────── */
+.grid {
+  display:grid; gap:var(--space-4);
+  grid-template-columns:repeat(auto-fill, minmax(132px,1fr));
+}
+@media(min-width:768px){ .grid { grid-template-columns:repeat(5,1fr); } }
+
+/* ── CTA ปิดท้าย ────────────────────────────────── */
+.final-cta {
+  text-align:center; padding:var(--space-7) var(--space-5);
+  border-radius:var(--radius-lg);
+  background:linear-gradient(135deg, rgba(245,158,11,.12), rgba(245,158,11,.03));
+  border:1px solid rgba(245,158,11,.25);
+  margin-bottom:var(--space-8);
+}
+.final-cta h2 { font-size:clamp(20px,3vw,28px); font-weight:900; margin-bottom:var(--space-2); }
+.final-cta p { color:var(--muted); font-size:14px; margin-bottom:var(--space-5); }
+
+/* ── Bottom nav (mobile) ────────────────────────── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:60;
+  display:flex; justify-content:space-around;
+  background:rgba(12,12,14,.9); backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:8px 0 max(8px, env(safe-area-inset-bottom));
+}
+.bottom-nav a {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:10px; font-weight:700; color:var(--muted);
+  padding:4px 10px; border-radius:12px;
+  transition:color var(--tr);
+}
+.bottom-nav a:hover, .bottom-nav a.active { color:var(--accent); }
+@media(max-width:767px){
+  .hero-grid { grid-template-columns:1fr; }
+  .hero-card { min-height:auto; }
+  .hero-poster { display:none; }
+  .hero-info { padding:var(--space-5) var(--space-5) var(--space-6); }
+  body { padding-bottom:70px; }
+}
+
+/* ── Motion ที่เคารพผู้ใช้ ───────────────────────── */
+@media (prefers-reduced-motion: reduce){
+  * { transition:none !important; animation:none !important; scroll-behavior:auto; }
+}
+@keyframes fadeUp { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+.hero-info > * { animation:fadeUp .55s ease both; }
+.hero-info > *:nth-child(2){ animation-delay:.08s }
+.hero-info > *:nth-child(3){ animation-delay:.16s }
+.hero-info > *:nth-child(4){ animation-delay:.24s }
+</style>
+</head>
+<body>
+<div class="mock-badge">MOCKUP PREVIEW</div>
+
+<header>
+  <div class="wrap">
+    <div class="hd-row">
+      <a class="logo" href="#">
+        <span class="mark">▶</span>
+        MOVIES<span class="ai">AI</span>
+      </a>
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+        <input type="search" placeholder="ค้นหาซีรีส์ แนวเรื่อง หรือชื่อนักแสดง..." aria-label="ค้นหา">
+      </div>
+      <button class="icon-btn" aria-label="รายการที่เก็บไว้">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7.5-4.6-9.7-9.2C.7 8.4 2.6 5 5.9 5c2 0 3.4 1.1 4.1 2.3h4c.7-1.2 2.1-2.3 4.1-2.3 3.3 0 5.2 3.4 3.6 6.8C19.5 16.4 12 21 12 21z" transform="scale(.86) translate(2,1)"/></svg>
+      </button>
+    </div>
+    <nav class="genre-row" aria-label="หมวดหมู่">
+      <a href="#" class="active">หน้าแรก</a>
+      <a href="#">ดราม่า</a>
+      <a href="#">โรแมนติก</a>
+      <a href="#">วาย</a>
+      <a href="#">แฟนตาซี</a>
+      <a href="#">ย้อนยุค</a>
+      <a href="#">ครอบครัว</a>
+      <a href="#">จบแล้ว</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-card">
+      <div class="hero-grid">
+        <div class="hero-poster">
+          <img src="https://picsum.photos/seed/moviesai-hero/540/960" alt="โปสเตอร์ซีรีส์เด่น">
+        </div>
+        <div class="hero-info">
+          <div class="pill-row">
+            <span class="pill hot">🔥 กำลังมาแรง</span>
+            <span class="pill">แฟนตาซี</span>
+            <span class="pill">โรแมนติก</span>
+            <span class="pill">พากย์ไทย</span>
+          </div>
+          <h1>ปรารถนาอัลฟ่าต้องห้าม</h1>
+          <p class="desc">ชะตากรรมนำพาให้เขาได้พบเจอกับหญิงสาวที่เป็นทั้งคนต้องห้ามและคนเดียวที่หัวใจเต้นแรงที่สุด แต่เบื้องหลังตระกูลทั้งสองไม่เคยยอมกันมาตลอด...</p>
+          <div class="cta-row">
+            <a href="#" class="btn btn-primary">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72L19 12 8 5.14z"/></svg>
+              ดูต่อ EP.12
+            </a>
+            <a href="#" class="btn btn-ghost">รายละเอียด</a>
+          </div>
+          <div class="meta-line">
+            <span><b>58</b> ตอน</span>
+            <span>·</span><span>จบแล้ว</span>
+            <span>·</span><span>แนวตั้ง 9:16</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ดูต่อ -->
+  <section id="continue" aria-labelledby="h-continue">
+    <div class="sec-head">
+      <h2 id="h-continue">ดูต่อจากที่ค้าง</h2>
+      <a class="more" href="#">ทั้งหมด ›</a>
+    </div>
+    <div class="row">
+      <a href="#" class="card card-wide">
+        <div class="thumb">
+          <img src="https://picsum.photos/seed/mv-w1/480/270" alt="">
+          <span class="ep-badge">EP.12 / 58</span>
+          <div class="progress" style="width:34%"></div>
+        </div>
+        <h3>ปรารถนาอัลฟ่าต้องห้าม</h3>
+        <div class="sub">เหลืออีก 46 ตอน</div>
+      </a>
+      <a href="#" class="card card-wide">
+        <div class="thumb">
+          <img src="https://picsum.photos/seed/mv-w2/480/270" alt="">
+          <span class="ep-badge">EP.3 / 24</span>
+          <div class="progress" style="width:62%"></div>
+        </div>
+        <h3>รักลับในเรือนย้อย</h3>
+        <div class="sub">เหลืออีก 21 ตอน</div>
+      </a>
+      <a href="#" class="card card-wide">
+        <div class="thumb">
+          <img src="https://picsum.photos/seed/mv-w3/480/270" alt="">
+          <span class="ep-badge">EP.8 / 18</span>
+          <div class="progress" style="width:81%"></div>
+        </div>
+        <h3>บุปผาอยู่ที่ดวงใจ</h3>
+        <div class="sub">เหลืออีก 10 ตอน</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ยอดนิยม -->
+  <section aria-labelledby="h-pop">
+    <div class="sec-head">
+      <h2 id="h-pop">ยอดนิยม</h2>
+      <a class="more" href="#">ทั้งหมด ›</a>
+    </div>
+    <div class="row">
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-p1/360/640" alt=""><span class="ep-badge full">จบแล้ว</span></div><h3>เรือนรัก ริมขอนแก่น</h3><div class="sub">โรแมนติก · 36 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-p2/360/640" alt=""><span class="ep-badge full">จบแล้ว</span></div><h3>มารยาทและหัวใจ</h3><div class="sub">ย้อนยุค · 52 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-p3/360/640" alt=""><span class="ep-badge">EP.6</span></div><h3>หัวใจลอยไปพร้อมสายลม</h3><div class="sub">ดราม่า · 40 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-p4/360/640" alt=""><span class="ep-badge full">จบแล้ว</span></div><h3>เจ้าหญิงข้ามเวลา</h3><div class="sub">แฟนตาซี · 68 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-p5/360/640" alt=""><span class="ep-badge">EP.2</span></div><h3>ลูกชายเจ้าของบริษัท</h3><div class="sub">วาย · 32 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-p6/360/640" alt=""><span class="ep-badge full">จบแล้ว</span></div><h3>สายใยที่ไม่เคยขาด</h3><div class="sub">ครอบครัว · 28 ตอน</div></a>
+    </div>
+  </section>
+
+  <!-- เรื่องใหม่ -->
+  <section aria-labelledby="h-new">
+    <div class="sec-head">
+      <h2 id="h-new">อัปเดตล่าสุด</h2>
+      <a class="more" href="#">ทั้งหมด ›</a>
+    </div>
+    <div class="row">
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-n1/360/640" alt=""><span class="ep-badge">EP.14</span></div><h3>ปรารถนาอัลฟ่าต้องห้าม</h3><div class="sub">แฟนตาซี · 58 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-n2/360/640" alt=""><span class="ep-badge">EP.9</span></div><h3>รักลับในเรือนย้อย</h3><div class="sub">โรแมนติก · 24 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-n3/360/640" alt=""><span class="ep-badge">EP.5</span></div><h3>บุปผาอยู่ที่ดวงใจ</h3><div class="sub">ดราม่า · 18 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-n4/360/640" alt=""><span class="ep-badge">EP.7</span></div><h3>ชายกางเกงเก่า</h3><div class="sub">ย้อนยุค · 30 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-n5/360/640" alt=""><span class="ep-badge">EP.11</span></div><h3>ล่ารักอสูรกาล</h3><div class="sub">แฟนตาซี · 44 ตอน</div></a>
+      <a href="#" class="card"><div class="thumb"><img src="https://picsum.photos/seed/mv-n6/360/640" alt=""><span class="ep-badge">EP.3</span></div><h3>บ้านของหัวใจ</h3><div class="sub">ครอบครัว · 22 ตอน</div></a>
+    </div>
+  </section>
+
+  <!-- CTA ปิดท้าย -->
+  <div class="final-cta">
+    <h2>ดูฟรีทั้งหมด ไม่ต้องลงทะเบียน</h2>
+    <p>ซีรีส์ AI แนวตั้ง เปิดดูได้ทันทีบนมือถือ เหมือนดูวิดีโอสั้นในโซเชียล</p>
+    <a href="#" class="btn btn-primary">เริ่มดูเลย</a>
+  </div>
+</main>
+
+<!-- Bottom nav มือถือ -->
+<nav class="bottom-nav" aria-label="เมนูหลัก">
+  <a href="#" class="active">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    หน้าแรก
+  </a>
+  <a href="#">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
+    ทั้งหมด
+  </a>
+  <a href="#">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+    ค้นหา
+  </a>
+  <a href="#">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 21s-7.5-4.6-9.7-9.2C.7 8.4 2.6 5 5.9 5c2 0 3.4 1.1 4.1 2.3h4c.7-1.2 2.1-2.3 4.1-2.3 3.3 0 5.2 3.4 3.6 6.8C19.5 16.4 12 21 12 21z" transform="scale(.86) translate(2,1)"/></svg>
+    เก็บไว้
+  </a>
+  <a href="#">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+    ประวัติ
+  </a>
+</nav>
+</body>
+</html>
