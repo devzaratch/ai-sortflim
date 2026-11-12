@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import Image from 'next/image'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Comments from '@/components/Comments'
@@ -166,10 +167,13 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                     <section className="relative w-full rounded-3xl overflow-hidden p-6 sm:p-8 md:p-10 border border-zinc-800/80 shadow-2xl flex flex-col md:flex-row gap-8 items-center md:items-start">
                         {movie.poster_url && (
                             <div className="absolute inset-0 z-0">
-                                <img
+                                <Image
                                     src={movie.poster_url}
-                                    alt="background blur"
-                                    className="w-full h-full object-cover filter blur-2xl scale-125 opacity-40"
+                                    alt=""
+                                    fill
+                                    sizes="100vw"
+                                    className="object-cover filter blur-2xl scale-125 opacity-40"
+                                    aria-hidden="true"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-r from-[#0b0b0d]/90 via-[#0b0b0d]/70 to-[#0b0b0d]/80 backdrop-blur-md" />
                             </div>
@@ -177,7 +181,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
 
                         <div className="w-44 sm:w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-500/60 flex-shrink-0 relative z-10 group">
                             {movie.poster_url ? (
-                                <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover" />
+                                <Image src={movie.poster_url} alt={movie.title} fill sizes="224px" className="object-cover" priority />
                             ) : (
                                 <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-zinc-600 text-xs">ไม่มีรูปโปสเตอร์</div>
                             )}
@@ -291,10 +295,12 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                     >
                                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-amber-500/80 transition duration-300 shadow-md">
                                             {movie.poster_url ? (
-                                                <img
+                                                <Image
                                                     src={movie.poster_url}
                                                     alt={`EP.${ep.episode_number}`}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                                    fill
+                                                    sizes="(max-width: 640px) 45vw, 180px"
+                                                    className="object-cover group-hover:scale-105 transition duration-500"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">
@@ -357,8 +363,8 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                                 href={`/movie-detail?movieId=${sim.id}`}
                                                 className="flex items-center gap-3 group"
                                             >
-                                                <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
-                                                    <img src={sim.poster_url} alt={sim.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                                                <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0 relative">
+                                                    <Image src={sim.poster_url} alt={sim.title} fill sizes="48px" className="object-cover group-hover:scale-105 transition" />
                                                 </div>
                                                 <div className="overflow-hidden">
                                                     <h4 className="text-xs font-bold text-zinc-200 group-hover:text-amber-400 transition truncate">

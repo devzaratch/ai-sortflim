@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import { connection } from 'next/server'
 import WatchRoute from './WatchRoute'
 import { getSupabaseServerClient } from '@/lib/supabase-server'
 
@@ -46,16 +47,30 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     }
 }
 
+/**
+ * DynamicMarker — เหตุผลเดียวกับ app/movie-detail/page.tsx
+ * (metadata per-request จาก searchParams + Supabase)
+ */
+async function DynamicMarker() {
+    await connection()
+    return null
+}
+
 export default function WatchPage() {
     return (
-        <Suspense
-            fallback={
-                <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
-                    กำลังโหลดหน้าวิดีโอ...
-                </div>
-            }
-        >
-            <WatchRoute />
-        </Suspense>
+        <>
+            <Suspense fallback={null}>
+                <DynamicMarker />
+            </Suspense>
+            <Suspense
+                fallback={
+                    <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
+                        กำลังโหลดหน้าวิดีโอ...
+                    </div>
+                }
+            >
+                <WatchRoute />
+            </Suspense>
+        </>
     )
 }

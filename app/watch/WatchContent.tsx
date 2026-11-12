@@ -4,9 +4,11 @@ import { useEffect, useState, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import Image from 'next/image'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { saveWatchProgress } from '@/lib/history'
+import { recordView } from '@/lib/views'
 
 interface WatchContentProps {
     movieId: string | null
@@ -50,14 +52,17 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
         }
     }, [currentEp, movie, episodes, user])
 
-    // สั่งให้วิดีโอเล่นอัตโนมัติเมื่อเปลี่ยนตอน
+    // สั่งให้วิดีโอเล่นอัตโนมัติเมื่อเปลี่ยนตอน + บันทึกยอดวิว (throttle 1 ครั้ง/6 ชม.ต่อเรื่อง)
     useEffect(() => {
         if (videoRef.current && currentEp?.stream_path) {
             videoRef.current.play().catch(() => {
                 // เบราว์เซอร์อาจบล็อก Auto-play แบบมีเสียง ให้รอผู้ใช้กดเล่น
             })
         }
-    }, [currentEp])
+        if (movie?.id) {
+            recordView(movie.id)
+        }
+    }, [currentEp, movie?.id])
 
     // ฟังก์ชันสำหรับหยุดและทำลายแทรกวิดีโอ/เสียงแบบเด็ดขาด 100%
     const stopAndClearVideo = () => {
@@ -255,7 +260,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                         </p>
                                         <button
                                             onClick={handleUpgradeVip}
-                                            className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-500 text-black font-extrabold rounded-2xl shadow-xl hover:brightness-110 transition text-sm"
+                                            className="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-600 text-black font-extrabold rounded-2xl shadow-xl hover:brightness-110 transition text-sm"
                                         >
                                             สมัครสมาชิก VIP รับชมได้ทันที
                                         </button>
@@ -414,10 +419,12 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                     <Link key={m.id} href={`/watch?movieId=${m.id}`} onClick={stopAndClearVideo} className="group flex flex-col">
                                         <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-amber-500/70 transition duration-300 shadow-xl">
                                             {m.poster_url ? (
-                                                <img
+                                                <Image
                                                     src={m.poster_url}
                                                     alt={m.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                                    fill
+                                                    sizes="(max-width: 640px) 45vw, 15vw"
+                                                    className="object-cover group-hover:scale-105 transition duration-500"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>

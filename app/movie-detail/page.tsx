@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
+import { connection } from 'next/server'
 import MovieDetailRoute from './MovieDetailRoute'
 import { getSupabaseServerClient } from '@/lib/supabase-server'
 
@@ -59,16 +60,33 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     }
 }
 
+/**
+ * DynamicMarker — บอก Next.js อย่างชัดเจนว่าหน้านี้มี metadata แบบ per-request
+ * (อ่าน searchParams + ดึงข้อมูลจาก Supabase ใน generateMetadata)
+ * ตาม fix "Mark the route as dynamic" ของ blocking-prerender-metadata-*
+ * ต้องอยู่ใน <Suspense> เสมอ ไม่งั้นขัดขวางการ prerender ทั้งหน้า
+ * (เมื่อย้ายไป route แบบ slug ในอนาคต ตัวนี้จะถูกถอดออก)
+ */
+async function DynamicMarker() {
+    await connection()
+    return null
+}
+
 export default function MovieDetailPage() {
     return (
-        <Suspense
-            fallback={
-                <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
-                    กำลังโหลดหน้า...
-                </div>
-            }
-        >
-            <MovieDetailRoute />
-        </Suspense>
+        <>
+            <Suspense fallback={null}>
+                <DynamicMarker />
+            </Suspense>
+            <Suspense
+                fallback={
+                    <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
+                        กำลังโหลดหน้า...
+                    </div>
+                }
+            >
+                <MovieDetailRoute />
+            </Suspense>
+        </>
     )
 }

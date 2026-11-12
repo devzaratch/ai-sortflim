@@ -1,13 +1,15 @@
-'use client'
+﻿'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { fetchAllMovies, fetchEpisodeCounts, fetchRecommendations } from '@/lib/data'
 import { clearWatchHistory, fetchServerHistory, readLocalHistory } from '@/lib/history'
+import { fetchViewCounts, formatViews } from '@/lib/views'
 import type { ContinueWatchingItem, Movie } from '@/lib/types'
 
 // รายชื่อหมวดหมู่ทั้งหมดสำหรับสร้าง Genre Cards
@@ -27,6 +29,7 @@ export default function Home() {
   const [totalEpisodesCount, setTotalEpisodesCount] = useState<number>(0)
   const [formattedDate, setFormattedDate] = useState<string>('')
   const [recommendations, setRecommendations] = useState<Movie[]>([])
+  const [viewCounts, setViewCounts] = useState<Record<string, number>>({})
 
   // แนะนำเรื่องที่คล้ายกับเรื่องล่าสุดที่ผู้ใช้ดู (อิงจาก genre)
   useEffect(() => {
@@ -91,6 +94,9 @@ export default function Home() {
       const counts = await fetchEpisodeCounts()
       setEpCounts(counts)
       setTotalEpisodesCount(Object.values(counts).reduce((sum, n) => sum + n, 0))
+
+      // ยอดวิวรวมของแต่ละเรื่อง (ถ้ายังไม่ได้รัน supabase/views.sql จะได้ค่าว่าง แล้วไม่พัง)
+      setViewCounts(await fetchViewCounts())
     } catch (err) {
       console.error('Error fetching data:', err)
     } finally {
@@ -107,7 +113,13 @@ export default function Home() {
   const prevIndex = heroMovies.length > 0 ? (activeIndex - 1 + heroMovies.length) % heroMovies.length : 0
   const nextIndex = heroMovies.length > 0 ? (activeIndex + 1) % heroMovies.length : 0
 
-  const top10Movies = movies.slice(0, 10)
+  // Top 10 เรียงตามยอดวิวจริงจากตาราง view_counts — ถ้ายังไม่มีข้อมูลวิว แสดงเรื่องล่าสุดแทน
+  const top10Movies = useMemo(() => {
+    if (Object.keys(viewCounts).length === 0) return movies.slice(0, 10)
+    return [...movies]
+      .sort((a, b) => (viewCounts[b.id] || 0) - (viewCounts[a.id] || 0))
+      .slice(0, 10)
+  }, [movies, viewCounts])
 
   // กรองซีรีส์ตามหมวดหมู่จากข้อมูลจริงใน Supabase
   const dramaMovies = movies.filter(m => m.genre?.includes('ดราม่า'))
@@ -201,20 +213,24 @@ export default function Home() {
                       onClick={() => setActiveIndex(prevIndex)}
                       className="absolute -left-2 sm:left-0 z-0 w-28 sm:w-36 aspect-[3/4] rounded-xl overflow-hidden shadow-xl opacity-40 scale-90 border border-white/[0.08] cursor-pointer hover:opacity-70 transition duration-300"
                     >
-                      <img
+                      <Image
                         src={heroMovies[prevIndex]?.poster_url || '/placeholder.jpg'}
                         alt="prev"
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="150px"
+                        className="object-cover"
                       />
                     </div>
                   )}
 
                   <div className="z-20 w-44 sm:w-52 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-400/80 relative transform scale-105 transition-all duration-500 shadow-[0_24px_60px_rgba(0,0,0,0.6),0_0_60px_rgba(245,158,11,0.14)]">
                     {activeMovie.poster_url ? (
-                      <img
+                      <Image
                         src={activeMovie.poster_url}
                         alt={activeMovie.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="300px"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-zinc-600 text-xs">ไม่มีรูปโปสเตอร์</div>
@@ -226,10 +242,12 @@ export default function Home() {
                       onClick={() => setActiveIndex(nextIndex)}
                       className="absolute -right-2 sm:right-0 z-0 w-28 sm:w-36 aspect-[3/4] rounded-xl overflow-hidden shadow-xl opacity-40 scale-90 border border-white/[0.08] cursor-pointer hover:opacity-70 transition duration-300"
                     >
-                      <img
+                      <Image
                         src={heroMovies[nextIndex]?.poster_url || '/placeholder.jpg'}
                         alt="next"
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="150px"
+                        className="object-cover"
                       />
                     </div>
                   )}
@@ -271,7 +289,7 @@ export default function Home() {
                 <Link key={item.movieId} href={`/movie-detail?movieId=${item.movieId}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-lg">
                     {item.posterUrl ? (
-                      <img src={item.posterUrl} alt={item.movieTitle} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      <Image src={item.posterUrl} alt={item.movieTitle} fill sizes="(max-width: 640px) 45vw, 15vw" className="object-cover group-hover:scale-105 transition duration-500" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
                     )}
@@ -323,7 +341,7 @@ export default function Home() {
                 <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-lg">
                     {movie.poster_url ? (
-                      <img src={movie.poster_url} alt={movie.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      <Image src={movie.poster_url} alt={movie.title} fill sizes="(max-width: 640px) 45vw, 15vw" className="object-cover group-hover:scale-105 transition duration-500" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
                     )}
@@ -376,10 +394,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูปโปสเตอร์</div>
@@ -406,7 +425,7 @@ export default function Home() {
           <section className="space-y-4 pt-4">
             <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
               <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
-                <span className="sec-bar" aria-hidden="true" /> Top 10 ละคร AI ประจำสัปดาห์
+                <span className="sec-bar" aria-hidden="true" /> ยอดนิยม Top 10
               </h3>
             </div>
 
@@ -424,10 +443,11 @@ export default function Home() {
                       )}
 
                       {movie.poster_url ? (
-                        <img
+                        <Image
                           src={movie.poster_url}
                           alt={movie.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                          fill sizes="(max-width: 640px) 45vw, 15vw"
+                          className="object-cover group-hover:scale-105 transition duration-500"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -449,7 +469,7 @@ export default function Home() {
                         {movie.title}
                       </h4>
                       <p className="text-[10px] text-zinc-500 truncate">
-                        {movie.genre || 'ซีรีส์สั้น AI'}
+                        {movie.genre || 'ซีรีส์สั้น AI'} · {formatViews(viewCounts[movie.id] || 0)} วิว
                       </p>
                     </div>
                   </Link>
@@ -483,10 +503,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -535,10 +556,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -587,10 +609,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -639,10 +662,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -691,10 +715,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -741,10 +766,11 @@ export default function Home() {
                     </div>
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>
@@ -831,10 +857,11 @@ export default function Home() {
                     )}
 
                     {movie.poster_url ? (
-                      <img
+                      <Image
                         src={movie.poster_url}
                         alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        fill sizes="(max-width: 640px) 45vw, 15vw"
+                        className="object-cover group-hover:scale-105 transition duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูป</div>

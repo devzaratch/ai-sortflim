@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -253,10 +254,12 @@ function MoviesContent() {
                                             )}
 
                                             {movie.poster_url ? (
-                                                <img
+                                                <Image
                                                     src={movie.poster_url}
                                                     alt={movie.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                                    fill
+                                                    sizes="(max-width: 640px) 45vw, 15vw"
+                                                    className="object-cover group-hover:scale-105 transition duration-500"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs">ไม่มีรูปโปสเตอร์</div>

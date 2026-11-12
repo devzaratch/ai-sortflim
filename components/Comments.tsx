@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import Image from 'next/image'
 import type { Comment } from '@/lib/types'
 
 export default function Comments({ movieId }: { movieId: string }) {
@@ -81,10 +82,12 @@ export default function Comments({ movieId }: { movieId: string }) {
                 {comments.map((comment: Comment) => (
                     <div key={comment.id} className="p-3 bg-zinc-800/50 rounded-xl border border-zinc-800/60">
                         <div className="flex items-center gap-2 mb-1">
-                            <img
+                            <Image
                                 className="w-6 h-6 rounded-full object-cover"
                                 src={`https://gravatar.com/avatar/${comment.user_id ?? '000000'}?d=mp&s=40`}
-                                alt="avatar"
+                                alt=""
+                                width={24}
+                                height={24}
                             />
                             <span className="text-xs text-zinc-300 font-medium">
                                 {comment.user_id ? 'ผู้ใช้งาน' : 'ผู้ไม่ระบุชื่อ'}
