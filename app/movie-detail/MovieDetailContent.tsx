@@ -360,7 +360,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                         {similarMovies.map((sim) => (
                                             <Link
                                                 key={sim.id}
-                                                href={`/movie-detail?movieId=${sim.id}`}
+                                                href={`/title/${encodeURIComponent(sim.title)}`}
                                                 className="flex items-center gap-3 group"
                                             >
                                                 <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0 relative">

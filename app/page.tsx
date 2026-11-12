@@ -286,7 +286,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {continueList.slice(0, 6).map((item) => (
-                <Link key={item.movieId} href={`/movie-detail?movieId=${item.movieId}`} className="group flex flex-col">
+                <Link key={item.movieId} href={`/title/${encodeURIComponent(item.movieTitle)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-lg">
                     {item.posterUrl ? (
                       <Image src={item.posterUrl} alt={item.movieTitle} fill sizes="(max-width: 640px) 45vw, 15vw" className="object-cover group-hover:scale-105 transition duration-500" />
@@ -338,7 +338,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {recommendations.map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-lg">
                     {movie.poster_url ? (
                       <Image src={movie.poster_url} alt={movie.title} fill sizes="(max-width: 640px) 45vw, 15vw" className="object-cover group-hover:scale-105 transition duration-500" />
@@ -384,7 +384,7 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
               {movies.slice(0, 6).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (
@@ -433,7 +433,7 @@ export default function Home() {
               {top10Movies.map((movie, index) => {
                 const rank = index + 1
                 return (
-                  <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col relative">
+                  <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col relative">
                     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                       {movie.is_completed && (
@@ -493,7 +493,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {dramaMovies.slice(0, 7).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (
@@ -546,7 +546,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {romanceMovies.slice(0, 7).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (
@@ -599,7 +599,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {familyMovies.slice(0, 7).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (
@@ -652,7 +652,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {periodMovies.slice(0, 7).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (
@@ -705,7 +705,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {revengeMovies.slice(0, 7).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (
@@ -758,7 +758,7 @@ export default function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {completedMovies.slice(0, 7).map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     <div className="absolute top-2 right-2 z-10 bg-emerald-500/90 text-black text-[9px] font-black px-1.5 py-0.5 rounded shadow">
@@ -847,7 +847,7 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {movies.map((movie) => (
-                <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#18181b] border border-white/[0.07] group-hover:border-amber-500/40 group-hover:-translate-y-1 transition duration-300 shadow-xl">
 
                     {movie.is_completed && (

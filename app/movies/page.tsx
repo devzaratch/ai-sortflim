@@ -243,7 +243,7 @@ function MoviesContent() {
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-5">
                                 {filteredMovies.map((movie) => (
-                                    <Link key={movie.id} href={`/movie-detail?movieId=${movie.id}`} className="group flex flex-col">
+                                    <Link key={movie.id} href={`/title/${encodeURIComponent(movie.title)}`} className="group flex flex-col">
                                         <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-amber-500/70 transition duration-300 shadow-xl">
 
                                             {/* Badge: จบแล้ว */}
