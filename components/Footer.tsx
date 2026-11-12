@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import LogoIcon from '@/components/LogoIcon'
 
 export default function Footer() {
     const [currentYear, setCurrentYear] = useState<number>(2026)
@@ -17,7 +18,8 @@ export default function Footer() {
 
                     {/* Column 1: Brand Info */}
                     <div className="lg:col-span-2 space-y-4">
-                        <Link href="/" className="text-2xl font-black tracking-tighter text-white inline-flex items-center gap-1.5">
+                        <Link href="/" className="text-2xl font-black tracking-tighter text-white inline-flex items-center gap-2">
+                            <LogoIcon className="w-8 h-8 shrink-0" />
                             <span className="bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">MOVIES</span>
                             <span className="bg-amber-500 text-zinc-950 px-2 py-0.5 rounded-lg text-xs font-black tracking-normal shadow-lg shadow-amber-500/20">AI</span>
                         </Link>

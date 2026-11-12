@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import LogoIcon from '@/components/LogoIcon'
 import { Heart, Sparkles } from 'lucide-react'
 
 interface HeaderProps {
@@ -105,9 +106,7 @@ export default function Header({ isHome = false, activeGenre, activeStatus, onNa
                     onClick={onNavigate}
                     className="text-2xl font-black tracking-tighter text-white flex items-center gap-2 shrink-0"
                 >
-                    <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 grid place-items-center text-[#1c1917] shadow-[0_0_18px_rgba(245,158,11,0.4)] text-lg leading-none">
-                        ▶
-                    </span>
+                    <LogoIcon className="w-9 h-9 shrink-0 drop-shadow-[0_0_14px_rgba(245,158,11,0.4)]" />
                     <span>
                         <span className="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">MOVIES</span>
                         <span className="text-amber-400 ml-1">AI</span>
