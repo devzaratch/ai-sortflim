@@ -68,8 +68,8 @@ export default function UploadPage() {
             setDescription('')
             setStreamPath('')
             setEpisodeNumber('')
-        } catch (err: any) {
-            setMsg(err.message || 'เกิดข้อผิดพลาด')
+        } catch (err) {
+            setMsg(err instanceof Error ? err.message : 'เกิดข้อผิดพลาด')
             setMsgType('error')
         } finally {
             setLoading(false)

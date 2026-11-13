@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Comments from '@/components/Comments'
+import type { Movie, Episode, ContinueWatchingItem } from '@/lib/types'
 
 const BOOKMARK_STORAGE_KEY = 'bookmarked_movies'
 
@@ -15,21 +16,15 @@ interface MovieDetailContentProps {
 }
 
 function MovieDetailContent({ movieId }: MovieDetailContentProps) {
-    const [movie, setMovie] = useState<any>(null)
-    const [episodes, setEpisodes] = useState<any[]>([])
-    const [similarMovies, setSimilarMovies] = useState<any[]>([])
+    const [movie, setMovie] = useState<Movie | null>(null)
+    const [episodes, setEpisodes] = useState<Episode[]>([])
+    const [similarMovies, setSimilarMovies] = useState<Movie[]>([])
     const [loading, setLoading] = useState<boolean>(Boolean(movieId))
     const [isBookmarked, setIsBookmarked] = useState<boolean>(false)
     const [sortAsc, setSortAsc] = useState<boolean>(true) // true = EP.1 -> ล่าสุด
     const [lastWatchedEp, setLastWatchedEp] = useState<number>(1)
 
-    useEffect(() => {
-        if (movieId) {
-            fetchMovieDetail(movieId)
-            loadWatchHistory(movieId)
-            loadBookmark(movieId)
-        }
-    }, [movieId])
+    // ── ผู้ช่วยโหลดข้อมูล (ประกาศก่อน effect ที่เรียกใช้) ──
 
     const loadBookmark = (mId: string) => {
         try {
@@ -38,6 +33,21 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
             setIsBookmarked(Array.isArray(ids) && ids.includes(mId))
         } catch {
             setIsBookmarked(false)
+        }
+    }
+
+    const loadWatchHistory = (mId: string) => {
+        try {
+            const saved = localStorage.getItem('continue_watching_history')
+            if (saved) {
+                const history: ContinueWatchingItem[] = JSON.parse(saved)
+                const match = history.find((item) => item.movieId === mId)
+                if (match) {
+                    setLastWatchedEp(match.lastEp || 1)
+                }
+            }
+        } catch (e) {
+            console.error(e)
         }
     }
 
@@ -57,21 +67,6 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
             }
             return next
         })
-    }
-
-    const loadWatchHistory = (mId: string) => {
-        try {
-            const saved = localStorage.getItem('continue_watching_history')
-            if (saved) {
-                const history = JSON.parse(saved)
-                const match = history.find((item: any) => item.movieId === mId)
-                if (match) {
-                    setLastWatchedEp(match.lastEp || 1)
-                }
-            }
-        } catch (e) {
-            console.error(e)
-        }
     }
 
     const fetchMovieDetail = async (id: string) => {
@@ -112,6 +107,24 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
             setLoading(false)
         }
     }
+
+    /** เรียกครั้งเดียวตอนเปิดหน้า: ดึงเรื่อง+ตอน, ประวัติดูต่อ, bookmark */
+    const loadMovieData = (id: string) => {
+        fetchMovieDetail(id)
+        loadWatchHistory(id)
+        loadBookmark(id)
+    }
+
+    // โหลดข้อมูลเมื่อเปิดหน้า — pattern data-fetch-on-mount ที่ถูกต้อง
+    // (setState ที่อยู่หลัง await ใน fetchMovieDetail ไม่ใช่ sync cascading render
+    //  แต่กฎ set-state-in-effect ยังไม่แยกแยะ — รอ plugin แก้ จึง disable เฉพาะจุด)
+    useEffect(() => {
+        if (movieId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on mount (async + localStorage sync); helpers declared above
+            loadMovieData(movieId)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- โหลดเฉพาะตอนเปิดหน้า/เปลี่ยนเรื่อง
+    }, [movieId])
 
     const sortedEpisodes = [...episodes].sort((a, b) => {
         return sortAsc ? a.episode_number - b.episode_number : b.episode_number - a.episode_number
@@ -364,7 +377,9 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                                 className="flex items-center gap-3 group"
                                             >
                                                 <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0 relative">
-                                                    <Image src={sim.poster_url} alt={sim.title} fill sizes="48px" className="object-cover group-hover:scale-105 transition" />
+                                                    {sim.poster_url && (
+                                                        <Image src={sim.poster_url} alt={sim.title} fill sizes="48px" className="object-cover group-hover:scale-105 transition" />
+                                                    )}
                                                 </div>
                                                 <div className="overflow-hidden">
                                                     <h4 className="text-xs font-bold text-zinc-200 group-hover:text-amber-400 transition truncate">

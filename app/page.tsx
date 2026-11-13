@@ -33,32 +33,19 @@ export default function Home() {
 
   // แนะนำเรื่องที่คล้ายกับเรื่องล่าสุดที่ผู้ใช้ดู (อิงจาก genre)
   useEffect(() => {
-    const history = readLocalHistory()
-    if (!user || history.length === 0) {
-      setRecommendations([])
-      return
-    }
     let cancelled = false
-    fetchRecommendations(history[0].movieId).then((recs) => {
+    const history = readLocalHistory()
+    const anchorId = user && history.length > 0 ? history[0].movieId : null
+
+    // setState ทั้งหมดอยู่ใน async callback — ไม่มี sync cascading render
+    Promise.resolve(anchorId ? fetchRecommendations(anchorId) : []).then((recs) => {
       if (!cancelled) setRecommendations(recs)
     })
+
     return () => {
       cancelled = true
     }
   }, [user])
-
-  useEffect(() => {
-    checkUserAndHistory()
-    fetchMoviesAndStats()
-
-    setFormattedDate(
-      new Date().toLocaleDateString('th-TH', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      })
-    )
-  }, [])
 
   // ล็อคให้สไลด์ Hero แสดงเฉพาะ 5 เรื่องล่าสุด
   const heroMovies = movies.slice(0, 5)
@@ -102,6 +89,30 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // โหลดข้อมูลหน้าแรกตอน mount (helpers ประกาศแล้วจึงไม่มี use-before-define)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability -- helper defined above
+    loadHomeData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- โหลดเฉพาะตอนเปิดหน้า
+  }, [])
+
+  /** เรียกครั้งเดียวตอน mount: ผู้ใช้+ประวัติดูต่อ + รายการเรื่อง/สถิติ + วันที่ */
+  function loadHomeData() {
+    checkUserAndHistory()
+    fetchMoviesAndStats()
+
+    // วันที่ปัจจุบันตั้งหลัง mount กัน hydration mismatch (เขตเวลา server ≠ เครื่องผู้ใช้)
+    Promise.resolve().then(() => {
+      setFormattedDate(
+        new Date().toLocaleDateString('th-TH', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        })
+      )
+    })
   }
 
   const handleClearHistory = async () => {

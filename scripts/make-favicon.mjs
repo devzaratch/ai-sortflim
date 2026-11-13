@@ -1,7 +1,8 @@
 // สคริปต์ช่วย: แปลง app/icon.svg → favicon.ico (PNG-in-ICO)
 // ใช้: node scripts/make-favicon.mjs
-import { readFileSync, writeFileSync } from 'node:fs'
+import { writeFileSync } from 'node:fs'
 import sharp from 'sharp'
+
 
 const svgPath = 'app/icon.svg'
 const icoPath = 'app/favicon.ico'

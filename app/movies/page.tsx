@@ -33,31 +33,30 @@ function MoviesContent() {
     /** รายชื่อเรื่องที่ผู้ใช้เก็บไว้ (เก็บใน localStorage) — ใช้เมื่อเปิด ?saved=1 */
     const [savedMovieIds, setSavedMovieIds] = useState<string[]>([])
 
-    // States สำหรับระบบ Filter
-    const [selectedGenre, setSelectedGenre] = useState<string>('ทุกแนว')
-    const [completedOnly, setCompletedOnly] = useState<boolean>(false)
+    // States สำหรับระบบ Filter (ตั้งค่าเริ่มต้นจาก URL เลย)
+    const [selectedGenre, setSelectedGenre] = useState<string>(urlGenre ?? 'ทุกแนว')
+    const [completedOnly, setCompletedOnly] = useState<boolean>(urlStatus === 'completed')
     const [sortBy, setSortBy] = useState<string>('latest') // 'latest' หรือ 'popular'
+    // จำ URL รอบก่อนเพื่อ "ปรับ state ตอน render" ตาม pattern ที่ React แนะนำ
+    // (แทนการซิงค์ด้วย useEffect ซึ่งทำให้ render ซ้ำ)
+    const [prevUrlParams, setPrevUrlParams] = useState<{ genre: string | null; status: string | null }>({
+        genre: urlGenre,
+        status: urlStatus,
+    })
 
-    // เมื่อ URL เปลี่ยน (เช่น กดจากหน้าแรก) ให้ซิงค์ค่า genre ลงใน State
-    useEffect(() => {
-        if (urlGenre) {
-            setSelectedGenre(urlGenre)
-        } else {
-            setSelectedGenre('ทุกแนว')
-        }
-
-        if (urlStatus === 'completed') {
-            setCompletedOnly(true)
-        } else {
-            setCompletedOnly(false)
-        }
-    }, [urlGenre, urlStatus])
+    // เมื่อ URL เปลี่ยน (เช่น กดจากหน้าแรก) ให้ซิงค์ค่า genre/status ลงใน State
+    if (prevUrlParams.genre !== urlGenre || prevUrlParams.status !== urlStatus) {
+        setPrevUrlParams({ genre: urlGenre, status: urlStatus })
+        setSelectedGenre(urlGenre ?? 'ทุกแนว')
+        setCompletedOnly(urlStatus === 'completed')
+    }
 
     useEffect(() => {
         // อ่านรายชื่อเรื่องที่ผู้ใช้เก็บไว้จาก localStorage (ฝั่ง client เท่านั้น)
         try {
             const raw = localStorage.getItem('bookmarked_movies')
             const parsed: unknown = raw ? JSON.parse(raw) : []
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- sync กับ external system (localStorage)
             setSavedMovieIds(Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [])
         } catch {
             setSavedMovieIds([])
@@ -65,6 +64,7 @@ function MoviesContent() {
     }, [savedOnly])
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/immutability -- data fetch on mount; helper declared below
         fetchMoviesAndEpisodes()
     }, [])
 

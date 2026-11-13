@@ -1,15 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import LogoIcon from '@/components/LogoIcon'
 
 export default function Footer() {
-    const [currentYear, setCurrentYear] = useState<number>(2026)
-
-    useEffect(() => {
-        setCurrentYear(new Date().getFullYear())
-    }, [])
+    // ปีปัจจุบันคำนวณตรง ๆ ได้เลย (SSR และ client ให้ค่าเดียวกัน ไม่มี hydration mismatch)
+    const currentYear = new Date().getFullYear()
 
     return (
         <footer className="w-full bg-[#070709] border-t border-zinc-800/80 text-zinc-400 font-sans mt-20">

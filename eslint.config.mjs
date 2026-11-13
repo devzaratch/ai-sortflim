@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // สคริปต์ scraping แบบ standalone (ไม่ได้เป็นส่วนหนึ่งของแอป Next.js)
+    "newscraper.js",
   ]),
 ]);
 

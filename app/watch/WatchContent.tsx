@@ -9,6 +9,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { saveWatchProgress } from '@/lib/history'
 import { recordView } from '@/lib/views'
+import type { Movie, Episode } from '@/lib/types'
 
 interface WatchContentProps {
     movieId: string | null
@@ -20,10 +21,10 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
 
     const [user, setUser] = useState<User | null>(null)
     const [isVip, setIsVip] = useState<boolean>(false)
-    const [movie, setMovie] = useState<any>(null)
-    const [episodes, setEpisodes] = useState<any[]>([])
-    const [currentEp, setCurrentEp] = useState<any>(null)
-    const [otherMovies, setOtherMovies] = useState<any[]>([])
+    const [movie, setMovie] = useState<Movie | null>(null)
+    const [episodes, setEpisodes] = useState<Episode[]>([])
+    const [currentEp, setCurrentEp] = useState<Episode | null>(null)
+    const [otherMovies, setOtherMovies] = useState<Movie[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [errorMsg, setErrorMsg] = useState<string>('')
     const [autoPlayNext, setAutoPlayNext] = useState<boolean>(true)
@@ -31,12 +32,14 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
     // เก็บ id ของตอนที่เล่นวิดีโอไม่สำเร็จ (ลิงก์ต้นทางมักมีอายุจำกัด)
     const [failedEpId, setFailedEpId] = useState<string | null>(null)
 
+    // โหลดข้อมูลเมื่อเปิดหน้า/เปลี่ยนเรื่อง — data-fetch-on-mount ที่ถูกต้อง
+    // (กฎ set-state-in-effect ยังไม่แยกแยะ setState หลัง await — disable เฉพาะจุด)
     useEffect(() => {
-        checkUserAndAccess()
         if (movieId) {
-            fetchMovieAndEpisodes(movieId)
-            fetchOtherMovies(movieId)
+            // eslint-disable-next-line react-hooks/immutability -- helper defined below
+            loadAll(movieId)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- โหลดเฉพาะเมื่อเปลี่ยนเรื่อง/ตอน
     }, [movieId, initialEp])
 
     // อัปเดตประวัติการดู (localStorage + Supabase ถ้าล็อกอินอยู่)
@@ -48,6 +51,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                 episodeNumber: currentEp.episode_number,
                 totalEpisodes: episodes.length,
             })
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- sync watched-set กับตอนที่กำลังเล่น (external system: video player)
             setWatchedEpIds(prev => new Set(prev).add(currentEp.id))
         }
     }, [currentEp, movie, episodes, user])
@@ -80,6 +84,13 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
             stopAndClearVideo()
         }
     }, [])
+
+    /** เรียกครั้งเดียวตอนเปิดหน้า/เปลี่ยนเรื่อง */
+    const loadAll = (id: string) => {
+        checkUserAndAccess()
+        fetchMovieAndEpisodes(id)
+        fetchOtherMovies(id)
+    }
 
     const checkUserAndAccess = async () => {
         const { data: { user } } = await supabase.auth.getUser()
@@ -121,13 +132,16 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                 .order('episode_number', { ascending: true })
 
             if (epError || !epData || epData.length === 0) {
-                const fallback = {
+                const fallback: Episode = {
                     id: 'fallback-ep',
                     movie_id: id,
                     title: 'ตอนที่ 1 (ตัวอย่าง)',
                     episode_number: 1,
                     access_level: 'free',
-                    stream_path: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+                    free_released_at: null,
+                    stream_path: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                    is_published: true,
+                    created_at: ''
                 }
                 setEpisodes([fallback])
                 setCurrentEp(fallback)

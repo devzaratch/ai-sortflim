@@ -78,6 +78,9 @@ export default function AdminDashboard() {
     }
 
     useEffect(() => {
+        // ดึงสถิติตอน mount — data fetch แบบ async ที่ถูกต้อง
+        // (กฎ set-state-in-effect ยังไม่แยกแยะ setState หลัง await — disable เฉพาะจุด)
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchStats()
     }, [])
 
