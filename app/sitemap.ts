@@ -23,7 +23,7 @@ async function getMovieSlugs(): Promise<MovieSlugRow[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ai-sortflim.vercel.app'
 
     const staticPaths: MetadataRoute.Sitemap = ['', '/movies', '/login'].map((path) => ({
         url: `${siteUrl}${path}`,

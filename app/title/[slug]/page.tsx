@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import MovieDetailContent from '@/app/movie-detail/MovieDetailContent'
-import { getSupabaseServerClient } from '@/lib/supabase-server'
-import type { Movie } from '@/lib/types'
+import { getMovieByTitle, resolveTitle } from './lookup'
 
 /**
  * หน้ารายละเอียดแบบ URL slug: /title/<ชื่อเรื่อง>
@@ -13,32 +12,6 @@ import type { Movie } from '@/lib/types'
 
 interface TitlePageProps {
     params: Promise<{ slug: string }>
-}
-
-/** ค้นหาเรื่องจากชื่อ — ใช้ 'use cache' เพื่อให้ prerender ได้ต่อชื่อ (แก้ตาม docs ของ Next 16) */
-async function getMovieByTitle(title: string): Promise<Movie | null> {
-    'use cache'
-    try {
-        const supabase = getSupabaseServerClient()
-        const { data } = await supabase
-            .from('movies')
-            .select('*')
-            .eq('title', title)
-            .limit(1)
-            .maybeSingle()
-        return (data as Movie) ?? null
-    } catch {
-        return null
-    }
-}
-
-/** ถอดรหัส slug (บราว์เซอร์ส่งชื่อไทยมาเป็น percent-encoded) */
-function resolveTitle(slug: string): string {
-    try {
-        return decodeURIComponent(slug)
-    } catch {
-        return slug
-    }
 }
 
 export async function generateMetadata({ params }: TitlePageProps): Promise<Metadata> {

@@ -416,7 +416,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                 {otherMovies.map((m) => (
-                                    <Link key={m.id} href={`/watch?movieId=${m.id}`} onClick={stopAndClearVideo} className="group flex flex-col">
+                                    <Link key={m.id} href={`/title/${encodeURIComponent(m.title)}/watch`} onClick={stopAndClearVideo} className="group flex flex-col">
                                         <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 group-hover:border-amber-500/70 transition duration-300 shadow-xl">
                                             {m.poster_url ? (
                                                 <Image

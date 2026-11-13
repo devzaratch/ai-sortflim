@@ -233,14 +233,14 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
 
                             <div className="flex flex-wrap items-center gap-3 pt-1">
                                 <Link
-                                    href={`/watch?movieId=${movie.id}&ep=${lastWatchedEp}`}
+                                    href={`/title/${encodeURIComponent(movie.title)}/watch?ep=${lastWatchedEp}`}
                                     className="bg-amber-500 hover:bg-amber-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-500/30 text-xs sm:text-sm transform active:scale-95"
                                 >
                                     <span>▶</span> ดูต่อ EP.{lastWatchedEp}
                                 </Link>
 
                                 <Link
-                                    href={`/watch?movieId=${movie.id}&ep=1`}
+                                    href={`/title/${encodeURIComponent(movie.title)}/watch?ep=1`}
                                     className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 font-bold px-5 py-2.5 rounded-xl transition text-xs sm:text-sm border border-zinc-700/60 flex items-center gap-1.5 backdrop-blur-sm"
                                 >
                                     <span>⏭</span> เริ่ม EP.1
@@ -290,7 +290,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                 {sortedEpisodes.map((ep) => (
                                     <Link
                                         key={ep.id}
-                                        href={`/watch?movieId=${movie.id}&ep=${ep.episode_number}`}
+                                        href={`/title/${encodeURIComponent(movie.title)}/watch?ep=${ep.episode_number}`}
                                         className="group flex flex-col"
                                     >
                                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-amber-500/80 transition duration-300 shadow-md">
