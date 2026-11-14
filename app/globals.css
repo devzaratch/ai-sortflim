@@ -55,6 +55,22 @@ body {
   overflow-x: clip;
 }
 
+/* ชีตบัญชีมือถือ (BottomNav) — เลื่อนขึ้น + จาง */
+@keyframes sheet-up {
+  from { transform: translateY(16px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes sheet-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.sheet-up { animation: sheet-up 0.22s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+.sheet-fade { animation: sheet-fade 0.18s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-up, .sheet-fade { animation: none !important; }
+}
+
 /* แถบเลื่อนแนวนอนของแถวการ์ด — ซ่อนแต่ยังเลื่อนได้ (touchpad/นิ้ว) */
 .no-scrollbar {
   scrollbar-width: none;
