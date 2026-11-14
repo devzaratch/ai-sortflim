@@ -38,6 +38,17 @@ body {
   color: var(--on-accent);
 }
 
+/* มือถือ: เอาแฟลชฟ้าตอนแตะออก (ใช้ active:scale แทน) + focus ring อำพันทุกอุปกรณ์ */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* แถบเลื่อนแนวนอนของแถวการ์ด — ซ่อนแต่ยังเลื่อนได้ (touchpad/นิ้ว) */
 .no-scrollbar {
   scrollbar-width: none;

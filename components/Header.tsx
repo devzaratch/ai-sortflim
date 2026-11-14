@@ -125,6 +125,7 @@ export default function Header({ isHome = false, activeGenre, activeStatus, onNa
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="ค้นหาชื่อเรื่อง แนว ฯลฯ…"
+                            enterKeyHint="search"
                             className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 outline-none min-w-0"
                         />
                     </label>
@@ -135,7 +136,7 @@ export default function Header({ isHome = false, activeGenre, activeStatus, onNa
                     href="/movies?saved=1"
                     onClick={onNavigate}
                     title="เรื่องที่เก็บไว้"
-                    className="w-10 h-10 rounded-full bg-[#121214] border border-white/[0.07] flex items-center justify-center text-zinc-300 hover:text-amber-400 hover:border-amber-500/40 hover:bg-[#18181b] transition shrink-0"
+                    className="w-11 h-11 rounded-full bg-[#121214] border border-white/[0.07] flex items-center justify-center text-zinc-300 hover:text-amber-400 hover:border-amber-500/40 hover:bg-[#18181b] transition shrink-0 active:scale-90"
                 >
                     <Heart className="w-4.5 h-4.5" />
                 </Link>

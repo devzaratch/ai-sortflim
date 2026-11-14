@@ -9,6 +9,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { saveWatchProgress } from '@/lib/history'
 import { recordView } from '@/lib/views'
+import { Lock, Flame } from 'lucide-react'
 import type { Movie, Episode } from '@/lib/types'
 
 interface WatchContentProps {
@@ -267,7 +268,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                             <div className="w-full max-w-[360px] aspect-[9/16] bg-black rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl relative flex items-center justify-center">
                                 {isLocked ? (
                                     <div className="w-full h-full bg-zinc-900/95 p-6 flex flex-col items-center justify-center text-center z-30 space-y-4">
-                                        <div className="text-5xl">🔒</div>
+                                        <Lock className="w-12 h-12 text-amber-400" aria-hidden="true" />
                                         <h3 className="text-lg font-extrabold text-amber-400">EP.{currentEp?.episode_number} เฉพาะสมาชิก VIP</h3>
                                         <p className="text-xs text-zinc-400 leading-relaxed">
                                             ตอนนี้เป็นตอนพิเศษ Early Access สมัคร VIP เพื่อปลดล็อกดูทันที
@@ -371,7 +372,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                             <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 md:p-6 space-y-4">
                                 <div className="flex items-center justify-between text-xs font-bold text-zinc-400">
                                     <span>เลือกตอน ({episodes.length} ตอน)</span>
-                                    <span className="text-amber-400">🔒 ตอนพิเศษสำหรับ VIP</span>
+                                    <span className="text-amber-400 inline-flex items-center gap-1"><Lock className="w-3.5 h-3.5" aria-hidden="true" /> ตอนพิเศษสำหรับ VIP</span>
                                 </div>
 
                                 <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-64 overflow-y-auto pr-1">
@@ -394,8 +395,8 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                                                 {ep.episode_number}
 
                                                 {isEpLocked ? (
-                                                    <span className="absolute -top-1 -right-1 text-[8px] bg-amber-500 text-black px-1 rounded-full font-bold">
-                                                        🔒
+                                                    <span className="absolute -top-1 -right-1 bg-amber-500 text-black rounded-full p-0.5">
+                                                        <Lock className="w-2 h-2" aria-hidden="true" />
                                                     </span>
                                                 ) : isWatched && !isSelected ? (
                                                     <span className="absolute top-0.5 right-1 text-[9px] text-emerald-400 font-bold">
@@ -424,7 +425,7 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
                         <section className="space-y-4 pt-6 border-t border-zinc-800/60">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-black text-white flex items-center gap-2">
-                                    <span className="text-amber-500">🔥</span> เรื่องอื่นที่น่าดู
+                                    <span className="text-amber-500 inline-flex items-center gap-1"><Flame className="w-4 h-4" aria-hidden="true" /> เรื่องอื่นที่น่าดู</span>
                                 </h3>
                             </div>
 

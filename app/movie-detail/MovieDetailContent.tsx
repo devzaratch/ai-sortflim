@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Comments from '@/components/Comments'
+import { Play } from 'lucide-react'
 import type { Movie, Episode, ContinueWatchingItem } from '@/lib/types'
 
 const BOOKMARK_STORAGE_KEY = 'bookmarked_movies'
@@ -247,9 +248,9 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                             <div className="flex flex-wrap items-center gap-3 pt-1">
                                 <Link
                                     href={`/title/${encodeURIComponent(movie.title)}/watch?ep=${lastWatchedEp}`}
-                                    className="bg-amber-500 hover:bg-amber-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-500/30 text-xs sm:text-sm transform active:scale-95"
+                                    className="bg-amber-500 hover:bg-amber-400 text-white font-extrabold px-6 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-500/30 text-xs sm:text-sm transform active:scale-95 min-h-11"
                                 >
-                                    <span>▶</span> ดูต่อ EP.{lastWatchedEp}
+                                    <Play className="w-4 h-4 fill-current" aria-hidden="true" /> ดูต่อ EP.{lastWatchedEp}
                                 </Link>
 
                                 <Link
@@ -304,7 +305,7 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                     <Link
                                         key={ep.id}
                                         href={`/title/${encodeURIComponent(movie.title)}/watch?ep=${ep.episode_number}`}
-                                        className="group flex flex-col"
+                                        className="group flex flex-col active:scale-95 transition-transform"
                                     >
                                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-amber-500/80 transition duration-300 shadow-md">
                                             {movie.poster_url ? (
@@ -322,8 +323,8 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
                                             )}
 
                                             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                                <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center pl-0.5 text-xs shadow-lg">
-                                                    ▶
+                                                <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs shadow-lg">
+                                                    <Play className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
                                                 </div>
                                             </div>
                                         </div>

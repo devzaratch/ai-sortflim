@@ -27,51 +27,67 @@ function BottomNavInner() {
     }
 
     return (
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[#0c0c0e]/90 backdrop-blur-xl border-t border-white/[0.07] flex items-stretch justify-around pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5">
+        <nav
+            aria-label="เมนูนำทางด้านล่าง"
+            className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[#0c0c0e]/92 backdrop-blur-xl border-t border-white/[0.07] flex items-stretch justify-around pt-1 pb-[max(6px,env(safe-area-inset-bottom))]"
+        >
             <Link
                 href="/"
-                className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 transition ${
+                aria-current={pathname === '/' ? 'page' : undefined}
+                className={`relative flex flex-col items-center justify-center gap-0.5 py-1.5 px-2.5 min-w-[60px] min-h-[52px] rounded-2xl active:scale-90 transition ${
                     pathname === '/' ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
-                <Home className="w-5 h-5" />
-                <span className={`text-[10px] ${pathname === '/' ? 'font-black' : 'font-bold'}`}>หน้าแรก</span>
+                <Home className="w-5 h-5" aria-hidden="true" />
+                <span className={`text-[11px] ${pathname === '/' ? 'font-black' : 'font-bold'}`}>หน้าแรก</span>
+                {pathname === '/' && (
+                    <span aria-hidden="true" className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.7)]" />
+                )}
             </Link>
 
             <Link
                 href="/movies"
-                className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 transition ${
+                aria-current={pathname === '/movies' && !savedActive ? 'page' : undefined}
+                className={`relative flex flex-col items-center justify-center gap-0.5 py-1.5 px-2.5 min-w-[60px] min-h-[52px] rounded-2xl active:scale-90 transition ${
                     pathname === '/movies' && !savedActive ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
-                <LayoutGrid className="w-5 h-5" />
-                <span className={`text-[10px] ${pathname === '/movies' && !savedActive ? 'font-black' : 'font-bold'}`}>ทั้งหมด</span>
+                <LayoutGrid className="w-5 h-5" aria-hidden="true" />
+                <span className={`text-[11px] ${pathname === '/movies' && !savedActive ? 'font-black' : 'font-bold'}`}>ทั้งหมด</span>
+                {pathname === '/movies' && !savedActive && (
+                    <span aria-hidden="true" className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.7)]" />
+                )}
             </Link>
 
             <button
                 onClick={focusSearch}
-                className="flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 text-zinc-400 hover:text-zinc-200 transition"
+                aria-label="ค้นหาเรื่อง"
+                className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-2.5 min-w-[60px] min-h-[52px] rounded-2xl text-zinc-400 hover:text-zinc-200 active:scale-90 transition"
             >
-                <Search className="w-5 h-5" />
-                <span className="text-[10px] font-bold">ค้นหา</span>
+                <Search className="w-5 h-5" aria-hidden="true" />
+                <span className="text-[11px] font-bold">ค้นหา</span>
             </button>
 
             <Link
                 href="/movies?saved=1"
-                className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 transition ${
+                aria-current={savedActive ? 'page' : undefined}
+                className={`relative flex flex-col items-center justify-center gap-0.5 py-1.5 px-2.5 min-w-[60px] min-h-[52px] rounded-2xl active:scale-90 transition ${
                     savedActive ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
             >
-                <Heart className="w-5 h-5" />
-                <span className={`text-[10px] ${savedActive ? 'font-black' : 'font-bold'}`}>เก็บไว้</span>
+                <Heart className={`w-5 h-5 ${savedActive ? 'fill-current' : ''}`} aria-hidden="true" />
+                <span className={`text-[11px] ${savedActive ? 'font-black' : 'font-bold'}`}>เก็บไว้</span>
+                {savedActive && (
+                    <span aria-hidden="true" className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.7)]" />
+                )}
             </Link>
 
             <Link
                 href="/#continue"
-                className="flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-w-14 text-zinc-400 hover:text-zinc-200 transition"
+                className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-2.5 min-w-[60px] min-h-[52px] rounded-2xl text-zinc-400 hover:text-zinc-200 active:scale-90 transition"
             >
-                <History className="w-5 h-5" />
-                <span className="text-[10px] font-bold">ประวัติ</span>
+                <History className="w-5 h-5" aria-hidden="true" />
+                <span className="text-[11px] font-bold">ประวัติ</span>
             </Link>
         </nav>
     )
