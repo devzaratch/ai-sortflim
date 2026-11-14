@@ -114,8 +114,8 @@ export default function Header({ isHome = false, activeGenre, activeStatus, onNa
                 </Link>
 
                 {/* แถบค้นหาแบบ pill ตรงกลาง */}
-                <form onSubmit={handleSearch} className="flex-1 flex items-center">
-                    <label className="flex items-center gap-2.5 w-full bg-[#121214] border border-white/[0.07] rounded-full px-4 py-2.5 cursor-text hover:border-amber-500/35 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/40 transition">
+                <form onSubmit={handleSearch} className="flex-1 min-w-0 flex items-center">
+                    <label className="flex items-center gap-2.5 w-full min-w-0 bg-[#121214] border border-white/[0.07] rounded-full px-4 py-2.5 cursor-text hover:border-amber-500/35 focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/40 transition">
                         <span className="w-5 h-5 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center shrink-0">
                             <Sparkles className="w-3 h-3 text-amber-400" />
                         </span>

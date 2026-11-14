@@ -49,6 +49,12 @@ html {
   border-radius: 4px;
 }
 
+/* กันเนื้อหาล้นขวาทำให้ซูมออกแล้ว layout กว้างเกินจอ (ใช้ clip เพราะไม่ทำ sticky header พัง) */
+html,
+body {
+  overflow-x: clip;
+}
+
 /* แถบเลื่อนแนวนอนของแถวการ์ด — ซ่อนแต่ยังเลื่อนได้ (touchpad/นิ้ว) */
 .no-scrollbar {
   scrollbar-width: none;
