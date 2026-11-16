@@ -248,6 +248,28 @@ function WatchContent({ movieId, initialEp }: WatchContentProps) {
     return (
         <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-amber-500 selection:text-black flex flex-col justify-between">
 
+            {movie && currentEp && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            '@context': 'https://schema.org',
+                            '@type': 'VideoObject',
+                            name: `${movie.title} EP.${currentEp.episode_number}`,
+                            description: movie.description || undefined,
+                            url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ai-sortflim.vercel.app'}/watch?movieId=${movie.id}&episode=${currentEp.episode_number}`,
+                            thumbnailUrl: movie.poster_url || undefined,
+                            uploadDate: currentEp.created_at,
+                            isPartOf: {
+                                '@type': 'TVSeries',
+                                name: movie.title,
+                                url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ai-sortflim.vercel.app'}/title/${encodeURIComponent(movie.title)}`,
+                            },
+                        }),
+                    }}
+                />
+            )}
+
             <div>
                 <Header activeGenre={genreTags[0] ?? null} onNavigate={stopAndClearVideo} />
 

@@ -163,6 +163,30 @@ function MovieDetailContent({ movieId }: MovieDetailContentProps) {
     return (
         <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-amber-500 selection:text-black flex flex-col justify-between">
 
+            {movie && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            '@context': 'https://schema.org',
+                            '@type': 'TVSeries',
+                            name: movie.title,
+                            description: movie.description || undefined,
+                            url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ai-sortflim.vercel.app'}/title/${encodeURIComponent(movie.title)}`,
+                            image: movie.poster_url || undefined,
+                            numberOfEpisodes: episodes.length || undefined,
+                            genre: genreTags.length > 0 ? genreTags : undefined,
+                            datePublished: movie.created_at,
+                            author: {
+                                '@type': 'Organization',
+                                name: 'MOVIES AI',
+                            },
+                            sameAs: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ai-sortflim.vercel.app'}/title/${encodeURIComponent(movie.title)}`,
+                        }),
+                    }}
+                />
+            )}
+
             <div>
                 <Header activeGenre={genreTags[0] ?? null} />
 
