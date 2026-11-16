@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import { fetchAllMovies, fetchEpisodeCounts, fetchRecommendations } from '@/lib/data'
+import { fetchMoviesList, fetchEpisodeCounts, fetchRecommendations } from '@/lib/data'
 import { clearWatchHistory, fetchServerHistory, readLocalHistory } from '@/lib/history'
 import { fetchViewCounts, formatViews } from '@/lib/views'
 import type { ContinueWatchingItem, Movie } from '@/lib/types'
@@ -75,7 +75,7 @@ export default function Home() {
   const fetchMoviesAndStats = async () => {
     setLoading(true)
     try {
-      const moviesData = await fetchAllMovies()
+      const moviesData = await fetchMoviesList()
       setMovies(moviesData)
 
       // นับจำนวนตอนทั้งหมด + จำนวนตอนต่อเรื่อง (แบ่งหน้าจนครบ)
@@ -230,6 +230,7 @@ export default function Home() {
                         alt="prev"
                         fill
                         sizes="150px"
+                        priority={true}
                         className="object-cover"
                       />
                     </div>
@@ -242,6 +243,7 @@ export default function Home() {
                         alt={activeMovie.title}
                         fill
                         sizes="300px"
+                        priority={true}
                         className="object-cover"
                       />
                     ) : (
@@ -259,6 +261,7 @@ export default function Home() {
                         alt="next"
                         fill
                         sizes="150px"
+                        priority={true}
                         className="object-cover"
                       />
                     </div>

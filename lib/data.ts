@@ -1,11 +1,30 @@
 import { supabase } from './supabase'
 import type { Movie } from './types'
 
-// Supabase/PostgREST จำกัดจำนวนแถวต่อคำขอ (ค่าเริ่มต้น 1,000) จึงต้องแบ่งหน้าเอง
-const PAGE_SIZE = 1000
-const MAX_PAGES = 50
+// คอลัมน์ที่จำเป็นสำหรับการ์ด/ลิสต์ (ไม่รวม description ที่ใช้แค่ในหน้า detail)
+const MOVIE_LIST_COLUMNS = 'id, title, poster_url, genre, is_completed, created_at'
 
-/** ดึงรายการละครทั้งหมด เรียงใหม่ล่าสุดก่อน */
+/**
+ * ดึงรายการละครสำหรับการ์ด/ลิสต์ — เบา กว่า fetchAllMovies
+ * ใช้ในหน้าแรก, /movies (หน้าที่แสดงเป็น grid)
+ */
+export async function fetchMoviesList(): Promise<Movie[]> {
+    const { data, error } = await supabase
+        .from('movies')
+        .select(MOVIE_LIST_COLUMNS)
+        .order('created_at', { ascending: false })
+
+    if (error || !data) {
+        if (error) console.error('Failed to fetch movies list:', error)
+        return []
+    }
+
+    return data as Movie[]
+}
+
+/**
+ * ดึงรายการละครทั้งหมด (ทุกคอลัมน์) — สำหรับหน้า detail / admin
+ */
 export async function fetchAllMovies(): Promise<Movie[]> {
     const { data, error } = await supabase
         .from('movies')
@@ -20,40 +39,26 @@ export async function fetchAllMovies(): Promise<Movie[]> {
     return data as Movie[]
 }
 
-/** ดึง movie_id ของทุกตอน (paginate จนครบ) เพื่อเอาไปนับจำนวนตอนต่อเรื่อง */
-export async function fetchAllEpisodeMovieIds(): Promise<string[]> {
-    const movieIds: string[] = []
+/**
+ * ดึงจำนวนตอนต่อเรื่องจาก view episode_counts (สร้างใน supabase/views.sql)
+ * ⚡ ข้อมูลถูกบันทึกใน DB ล่วงหน้า → ไม่ต้อง fetch ทุกแถว episodes
+ * คำขอเดียวได้ทั้งหมด แทนการวนหลายหน้า (1,000 แถว/หน้า)
+ */
+export async function fetchEpisodeCounts(): Promise<Record<string, number>> {
+    const { data, error } = await supabase
+        .from('episode_counts')
+        .select('movie_id, episode_count')
 
-    for (let page = 0; page < MAX_PAGES; page++) {
-        const { data, error } = await supabase
-            .from('episodes')
-            .select('movie_id')
-            .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-
-        if (error || !data || data.length === 0) break
-
-        for (const row of data) {
-            if (row.movie_id) movieIds.push(row.movie_id)
-        }
-
-        if (data.length < PAGE_SIZE) break
+    if (error || !data) {
+        if (error) console.error('Failed to fetch episode counts:', error)
+        return {}
     }
 
-    return movieIds
-}
-
-/** นับจำนวนตอนต่อ movie id */
-export function countEpisodesByMovie(movieIds: string[]): Record<string, number> {
     const counts: Record<string, number> = {}
-    for (const movieId of movieIds) {
-        counts[movieId] = (counts[movieId] || 0) + 1
+    for (const row of data) {
+        if (row.movie_id) counts[row.movie_id] = row.episode_count ?? 0
     }
     return counts
-}
-
-/** ดึงจำนวนตอนต่อเรื่องในคำสั่งเดียว */
-export async function fetchEpisodeCounts(): Promise<Record<string, number>> {
-    return countEpisodesByMovie(await fetchAllEpisodeMovieIds())
 }
 
 /** แนะนำเรื่องที่คล้ายกัน โดยอ้างอิงจากแนว (genre) แรกของเรื่องที่ส่งเข้ามา */
@@ -70,7 +75,7 @@ export async function fetchRecommendations(movieId: string): Promise<Movie[]> {
 
     const { data } = await supabase
         .from('movies')
-        .select('*')
+        .select(MOVIE_LIST_COLUMNS)
         .neq('id', movieId)
         .ilike('genre', `%${genre}%`)
         .limit(3)

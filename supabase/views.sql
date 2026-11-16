@@ -1,10 +1,17 @@
--- ═══════════════════════════════════════════════════════════
--- MOVIES AI — ระบบนับยอดวิว (view_count)
--- รันไฟล์นี้ใน Supabase Dashboard → SQL Editor (แล้วกด Run)
--- ทำงาน: สร้างตาราง view_counts + ฟังก์ชัน record_view + RLS
--- ═══════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
+-- MOVIES AI — SQL Views (Wave 2 ข้อ 4: ลดข้อมูลที่ดึง + episode_counts)
+-- รันไฟล์นี้ใน Supabase Dashboard → SQL Editor → Run
+--
+-- หลักการออกแบบ:
+--   1) view episode_counts — นับจำนวนตอนต่อเรื่องใน DB แทนการ fetch ทั้งตาราง
+--   2) ลดการดึงข้อมูลจาก "ทุกแถว episodes" → "แค่ movie_id + count"
+--   3) ไม่ต้องซิงค์เพิ่มเติม — view อัปเดตตามข้อมูลจริงอัตโนมัติ
+--   4) ยังคงรักษา view_counts + record_view ไว้ (ไม่กระทบระบบยอดวิวเดิม)
+-- ════════════════════════════════════════════════════════════════════
 
--- ตารางนับยอดวิวต่อเรื่อง (1 แถวต่อเรื่อง)
+-- ═══════════════════════════════════════════════════════════════════
+-- ตารางนับยอดวิวต่อเรื่อง (1 แถวต่อเรื่อง) — รักษารูปแบบเดิม
+-- ════════════════════════════════════════════════════════════════════
 create table if not exists public.view_counts (
     movie_id   uuid primary key references public.movies (id) on delete cascade,
     views      bigint not null default 0,
@@ -20,8 +27,19 @@ create policy "view_counts readable by everyone"
     for select
     using (true);
 
+-- ═══════════════════════════════════════════════════════════════════
+-- view episode_counts — นับตอนต่อเรื่องในคำสั่งเดียว
+-- ═══════════════════════════════════════════════════════════════════
+create view if not exists public.episode_counts as
+select movie_id, count(*) as episode_count
+from public.episodes
+where is_published = true
+group by movie_id;
+
+-- ═══════════════════════════════════════════════════════════════════
 -- ฟังก์ชันบันทึกยอดวิว: แทรกถ้ายังไม่มี / บวกเพิ่มถ้ามีแล้ว
 -- security definer เพื่อให้ anon บันทึกได้โดยไม่ต้องเปิด insert กว้าง
+-- ═══════════════════════════════════════════════════════════════════
 create or replace function public.record_view(p_movie_id uuid)
 returns bigint
 language sql
@@ -38,3 +56,12 @@ $$;
 
 -- ให้ anon และ user ที่ล็อกอินเรียกฟังก์ชันได้
 grant execute on function public.record_view(uuid) to anon, authenticated;
+
+-- ═══════════════════════════════════════════════════════════════════
+-- หลังรันเสร็จ — ตรวจผลลัพธ์:
+--   select * from episode_counts limit 5;
+--
+-- ใช้งานใน lib/data.ts:
+--   const { data } = await supabase.from('episode_counts').select('movie_id, episode_count');
+--   → ได้ Record<string, number> ในคำขอเดียว (แทน fetch ทั้งตาราง)
+-- ═══════════════════════════════════════════════════════════════════

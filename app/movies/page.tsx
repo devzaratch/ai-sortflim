@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import { fetchAllMovies, fetchEpisodeCounts } from '@/lib/data'
+import { fetchMoviesList, fetchEpisodeCounts } from '@/lib/data'
 import type { Movie } from '@/lib/types'
 
 // รายการหมวดหมู่ทั้งหมดตามภาพตัวอย่าง
@@ -71,7 +71,7 @@ function MoviesContent() {
     const fetchMoviesAndEpisodes = async () => {
         setLoading(true)
         try {
-            const moviesData = await fetchAllMovies()
+            const moviesData = await fetchMoviesList()
             setMovies(moviesData)
 
             // คำนวณจำนวนเรื่องในแต่ละหมวดหมู่
