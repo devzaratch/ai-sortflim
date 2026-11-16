@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Header from '@/components/Header'
+import AdminGate from '@/components/AdminGate'
 
 interface Stat {
     label: string
@@ -33,7 +34,7 @@ async function countRows(table: 'movies' | 'episodes' | 'profiles' | 'watch_hist
     return count ?? 0
 }
 
-export default function AdminDashboard() {
+function AdminDashboard() {
     const [stats, setStats] = useState<Stat[]>([])
     const [genres, setGenres] = useState<GenreStat[]>([])
     const [comments, setComments] = useState<CommentStat[]>([])
@@ -86,7 +87,7 @@ export default function AdminDashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center">
+            <div className="min-h-[50vh] flex items-center justify-center">
                 <div className="flex items-center gap-6">
                     <div className="w-10 h-10 border-2 border-zinc-700 border-t-amber-500 rounded-full animate-spin" />
                     <p className="text-lg text-zinc-300">กำลังโหลดสถิติ...</p>
@@ -96,10 +97,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans">
-            <Header />
-
-            <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
                 <div>
                     <h1 className="text-2xl font-black text-white mb-1">แดชบอร์ดแอดมิน</h1>
                     <p className="text-sm text-zinc-400">สรุปสถิติของระบบ</p>
@@ -154,7 +152,17 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </section>
-            </main>
+        </main>
+    )
+}
+
+export default function AdminPage() {
+    return (
+        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans">
+            <Header />
+            <AdminGate>
+                <AdminDashboard />
+            </AdminGate>
         </div>
     )
 }

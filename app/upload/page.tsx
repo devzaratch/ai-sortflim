@@ -4,8 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import Header from '@/components/Header'
+import AdminGate from '@/components/AdminGate'
 
-export default function UploadPage() {
+function UploadForm() {
     const [title, setTitle] = useState('')
     const [genre, setGenre] = useState('')
     const [description, setDescription] = useState('')
@@ -77,10 +78,7 @@ export default function UploadPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans flex flex-col">
-            <Header />
-
-            <main className="max-w-md mx-auto px-4 py-10 space-y-6">
+        <main className="max-w-md mx-auto px-4 py-10 space-y-6">
                 <div className="text-center">
                     <h1 className="text-2xl font-black text-white mb-2">อัปโหลดตอนใหม่</h1>
                     <p className="text-xs text-zinc-400">สำหรับครีเอเตอร์ที่ต้องการเพิ่มละคร</p>
@@ -192,7 +190,17 @@ export default function UploadPage() {
                         ← กลับหน้าแรก
                     </Link>
                 </div>
-            </main>
+        </main>
+    )
+}
+
+export default function UploadPage() {
+    return (
+        <div className="min-h-screen bg-[#0b0b0d] text-white font-sans flex flex-col">
+            <Header />
+            <AdminGate>
+                <UploadForm />
+            </AdminGate>
         </div>
     )
 }
