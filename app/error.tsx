@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { TriangleAlert } from 'lucide-react'
 
 export default function GlobalError({
     error,
@@ -16,7 +17,7 @@ export default function GlobalError({
 
     return (
         <div className="min-h-screen bg-[#0b0b0d] text-white flex flex-col items-center justify-center text-center px-6 space-y-5">
-            <p className="text-5xl">⚠️</p>
+            <TriangleAlert className="w-12 h-12 text-amber-400" aria-hidden="true" />
             <h1 className="text-xl font-black">เกิดข้อผิดพลาดบางอย่าง</h1>
             <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
                 ขออภัย ระบบไม่สามารถแสดงหน้านี้ได้ในขณะนี้ ลองใหม่อีกครั้งหรือกลับไปที่หน้าแรก

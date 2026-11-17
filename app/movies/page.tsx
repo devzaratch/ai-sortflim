@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
+import { Heart, Search, Pin, X } from 'lucide-react'
 import { fetchMoviesList, fetchEpisodeCounts } from '@/lib/data'
 import type { Movie } from '@/lib/types'
 
@@ -147,15 +148,15 @@ function MoviesContent() {
                     {(urlSearch || savedOnly) && (
                         <div className="flex flex-wrap items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-300 px-4 py-2.5 rounded-xl text-xs font-bold">
                             {savedOnly ? (
-                                <span>❤️ แสดงเฉพาะเรื่องที่คุณเก็บไว้</span>
+                                <span className="flex items-center gap-1.5"><Heart className="w-3.5 h-3.5" aria-hidden="true" /> แสดงเฉพาะเรื่องที่คุณเก็บไว้</span>
                             ) : (
-                                <span>🔍 ผลการค้นหา &ldquo;{urlSearch}&rdquo;</span>
+                                <span className="flex items-center gap-1.5"><Search className="w-3.5 h-3.5" aria-hidden="true" /> ผลการค้นหา &ldquo;{urlSearch}&rdquo;</span>
                             )}
                             <button
                                 onClick={() => router.push('/movies')}
-                                className="ml-auto text-zinc-400 hover:text-white transition font-bold"
+                                className="ml-auto text-zinc-400 hover:text-white transition font-bold flex items-center gap-1"
                             >
-                                ✕ ล้างตัวกรอง
+                                <X className="w-3.5 h-3.5" aria-hidden="true" /> ล้างตัวกรอง
                             </button>
                         </div>
                     )}
@@ -212,7 +213,7 @@ function MoviesContent() {
                                     onChange={(e) => setCompletedOnly(e.target.checked)}
                                     className="w-4 h-4 accent-amber-500 rounded cursor-pointer"
                                 />
-                                <span>📌 จบแล้วเท่านั้น</span>
+                                <span className="flex items-center gap-1.5"><Pin className="w-3.5 h-3.5" aria-hidden="true" /> จบแล้วเท่านั้น</span>
                             </label>
 
                             <div className="flex items-center gap-3 text-zinc-400">
