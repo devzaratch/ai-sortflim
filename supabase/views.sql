@@ -29,12 +29,23 @@ create policy "view_counts readable by everyone"
 
 -- ═══════════════════════════════════════════════════════════════════
 -- view episode_counts — นับตอนต่อเรื่องในคำสั่งเดียว
+-- (PostgreSQL ไม่รองรับ CREATE VIEW IF NOT EXISTS จึงตรวจผ่าน pg_views ใน DO block)
 -- ═══════════════════════════════════════════════════════════════════
-create view if not exists public.episode_counts as
-select movie_id, count(*) as episode_count
-from public.episodes
-where is_published = true
-group by movie_id;
+do $$
+begin
+  if not exists (
+    select 1 from pg_views
+    where schemaname = 'public' and viewname = 'episode_counts'
+  ) then
+    create view public.episode_counts as
+    select movie_id, count(*) as episode_count
+    from public.episodes
+    where is_published = true
+    group by movie_id;
+  end if;
+end $$;
+
+grant select on public.episode_counts to anon, authenticated;
 
 -- ═══════════════════════════════════════════════════════════════════
 -- ฟังก์ชันบันทึกยอดวิว: แทรกถ้ายังไม่มี / บวกเพิ่มถ้ามีแล้ว
