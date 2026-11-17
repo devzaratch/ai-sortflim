@@ -27,6 +27,48 @@ export async function getMoviesLight(): Promise<Movie[]> {
     return data as Movie[]
 }
 
+/** เรื่องเด่น Hero (5 เรื่องล่าสุด พร้อม description) — แคชไว้ */
+export async function getHeroMovies(count = 5): Promise<Movie[]> {
+    'use cache'
+    const supabase = getSupabaseServerClient()
+    const { data, error } = await supabase
+        .from('movies')
+        .select('id, title, poster_url, genre, description, is_completed, created_at')
+        .order('created_at', { ascending: false })
+        .limit(count)
+
+    if (error || !data) {
+        if (error) console.error('getHeroMovies failed:', error.message)
+        return []
+    }
+    return data as Movie[]
+}
+
+/** ยอดวิวทุกเรื่อง (มี pagination กันตัดที่ 1,000 แถว) — แคชไว้ */
+export async function getViewCounts(): Promise<Record<string, number>> {
+    'use cache'
+    const supabase = getSupabaseServerClient()
+    const PAGE_SIZE = 1000
+    const out: Record<string, number> = {}
+
+    for (let page = 0; page < 50; page++) {
+        const { data, error } = await supabase
+            .from('view_counts')
+            .select('movie_id, views')
+            .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
+
+        if (error || !data || data.length === 0) break
+
+        for (const row of data) {
+            out[row.movie_id] = Number(row.views) || 0
+        }
+
+        if (data.length < PAGE_SIZE) break
+    }
+
+    return out
+}
+
 /** จำนวนตอนต่อเรื่องจาก view episode_counts — แคชไว้เช่นกัน */
 export async function getEpisodeCounts(): Promise<Record<string, number>> {
     'use cache'
