@@ -1,76 +1,44 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import { connection } from 'next/server'
-import WatchRoute from './WatchRoute'
-import { getSupabaseServerClient } from '@/lib/supabase-server'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { getMovieTitleById } from '@/lib/data-server'
+
+/**
+ * Route เก่า /watch?movieId=<uuid>&ep=<เลข> — Wave 3 ข้อ 5
+ * เลิกใช้แล้ว: redirect (308) ไปหน้า canonical /title/<ชื่อเรื่อง>/watch?ep=<เลข>
+ * ประโยชน์: ลดเนื้อหาซ้ำ + เก็บลิงก์เก่า (เช่นจากคำอธิบายวิดีโอ) ให้ยังใช้งานได้
+ *
+ * หมายเหตุ: เปิด Cache Components อยู่ → route request-time ตอบ 200 พร้อม streamed redirect
+ * (เบราว์เซอร์/crawler ที่รัน JS ตามไปเอง) — metadata noindex คงไว้กันถูก index ตามเดิม
+ */
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+/** เป็น route redirect เท่านั้น — ให้ render แบบ blocking ได้ (ไม่ต้องมี instant shell) */
+export const instant = false
+
+/** ห้าม index (เหมือนเดิมก่อน refactor) — canonical อยู่ที่ /title/<ชื่อ>/watch */
+export const metadata: Metadata = {
+    title: 'ดูวิดีโอ',
+    robots: { index: false, follow: false },
+}
 
 function firstParam(value: string | string[] | undefined) {
     return Array.isArray(value) ? value[0] : value
 }
 
-export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
-    const movieId = firstParam((await searchParams).movieId) ?? null
+export default async function WatchPage({ searchParams }: { searchParams: SearchParams }) {
+    const sp = await searchParams
+    const movieId = firstParam(sp.movieId)
 
-    if (!movieId) {
-        return { title: 'ดูวิดีโอ', robots: { index: false, follow: false } }
-    }
+    if (!movieId) notFound()
 
-    try {
-        const supabase = getSupabaseServerClient()
-        const { data } = await supabase
-            .from('movies')
-            .select('title, description, poster_url')
-            .eq('id', movieId)
-            .maybeSingle()
+    const title = await getMovieTitleById(movieId)
+    if (!title) notFound()
 
-        if (!data) {
-            return { title: 'ดูวิดีโอ', robots: { index: false, follow: false } }
-        }
+    // รองรับชื่อพารามิเตอร์เก่าทั้ง ep และ episode
+    const epRaw = firstParam(sp.ep) ?? firstParam(sp.episode)
+    const ep = epRaw ? Number.parseInt(epRaw, 10) : NaN
+    const epParam = Number.isFinite(ep) && ep > 0 ? `?ep=${ep}` : ''
 
-        const description = data.description?.slice(0, 160) ?? `ดู${data.title} ละครสั้น AI แนวตั้ง`
-
-        return {
-            title: `ดู ${data.title}`,
-            description,
-            alternates: { canonical: `/movie-detail?movieId=${movieId}` },
-            openGraph: {
-                title: data.title,
-                description,
-                type: 'video.other',
-                images: data.poster_url ? [{ url: data.poster_url }] : undefined,
-            },
-        }
-    } catch {
-        return { title: 'ดูวิดีโอ', robots: { index: false, follow: false } }
-    }
-}
-
-/**
- * DynamicMarker — เหตุผลเดียวกับ app/movie-detail/page.tsx
- * (metadata per-request จาก searchParams + Supabase)
- */
-async function DynamicMarker() {
-    await connection()
-    return null
-}
-
-export default function WatchPage() {
-    return (
-        <>
-            <Suspense fallback={null}>
-                <DynamicMarker />
-            </Suspense>
-            <Suspense
-                fallback={
-                    <div className="min-h-screen bg-[#0b0b0d] text-white flex items-center justify-center text-xs">
-                        กำลังโหลดหน้าวิดีโอ...
-                    </div>
-                }
-            >
-                <WatchRoute />
-            </Suspense>
-        </>
-    )
+    permanentRedirect(`/title/${encodeURIComponent(title)}/watch${epParam}`)
 }

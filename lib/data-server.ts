@@ -89,6 +89,20 @@ export async function getEpisodeCounts(): Promise<Record<string, number>> {
     return counts
 }
 
+/** ค้นชื่อเรื่องจาก id (สำหรับ redirect route เก่า /watch?movieId= → /title/<ชื่อ>/watch) — แคชไว้ */
+export async function getMovieTitleById(id: string): Promise<string | null> {
+    'use cache'
+    const supabase = getSupabaseServerClient()
+    const { data } = await supabase
+        .from('movies')
+        .select('title')
+        .eq('id', id)
+        .limit(1)
+        .maybeSingle()
+
+    return (data?.title as string | undefined) ?? null
+}
+
 /** นับจำนวนเรื่องต่อแนว (จากลิสต์ที่ส่งเข้า) — เหมือน logic เดิมฝั่ง client */
 export function computeGenreCounts(movies: Movie[]): Record<string, number> {
     const counts: Record<string, number> = {}

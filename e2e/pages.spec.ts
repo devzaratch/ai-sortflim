@@ -51,3 +51,16 @@ test.describe('หน้ารายละเอียดแบบ slug', () => 
         await expect(page.getByText('ไม่พบหน้าที่คุณต้องการ')).toBeVisible({ timeout: 30_000 })
     })
 })
+
+test.describe('route เก่า redirect ไป slug', () => {
+    test('/watch?movieId= ของเรื่องทดสอบ (id คงที่ในชุดข้อมูล) พาไปหน้าดู canonical', async ({ page }) => {
+        await page.goto('/watch?movieId=6ab796fe-a55a-4b38-917f-423b22e80361&ep=3')
+        await expect(page).toHaveURL(/\/title\/[^/]+\/watch/, { timeout: 20_000 })
+        await expect(page).toHaveURL(/ep=3/)
+    })
+
+    test('/watch ไม่มี movieId → แสดงหน้า 404', async ({ page }) => {
+        await page.goto('/watch')
+        await expect(page.getByText('ไม่พบหน้าที่คุณต้องการ')).toBeVisible({ timeout: 30_000 })
+    })
+})
