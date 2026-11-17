@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    // ระบุผ่าน agent upgrade (security advisory fix) — ถูกเพิ่มโดยคำสั่ง next upgrade --agent=security
+    agentUpgrade: "security",
   },
   cacheComponents: true,
   partialPrefetching: true,
